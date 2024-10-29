@@ -22,7 +22,6 @@ HeartGuard es una aplicación web diseñada para ayudar en la detección tempran
 - Python 3.x
 - Django 3.x
 - MySQL/PostgreSQL
-- Node.js (opcional, para gestionar dependencias de frontend)
 
 ### Pasos de Instalación
 
