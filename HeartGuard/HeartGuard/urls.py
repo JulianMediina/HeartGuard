@@ -16,14 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from HeartGuard.views import login, home, gestionPacientes,historialMedico,resultados
+from . import views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/',login),
-    path('home/', home),
-    path('gestionPacientes/',gestionPacientes),
-    path('historialMedico/',historialMedico),
-    path('resultados/',resultados)
+    path('login/',views.login, name = 'login'),
+    path('home/', views.home, name='home'),
+    path('gestionPacientes/',views.gestionPacientes, name = 'gestionPacientes'),
+    path('historialMedico/',views.historialMedico, name = 'historialMedico'),
+    path('resultados/',views.resultados, name='resultados')
 ]

@@ -1,28 +1,16 @@
-from django.http import HttpResponse
-import datetime
-from django.template.loader import get_template
+from django.shortcuts import render
 
+def login(request):
+    return render(request, 'login-roles.html')
 
-def login (request):
-    docAux = get_template('login-roles.html')
-    document = docAux.render()
-    return HttpResponse(document)
-def home (request):
-    docAux = get_template('dashboard.html')
-    document = docAux.render()
-    return HttpResponse(document)
+def home(request):
+    return render(request, 'dashboard.html')
 
-def gestionPacientes (request):
-    docAux = get_template('gestion-pacientes.html')
-    document = docAux.render()
-    return HttpResponse(document)
+def gestionPacientes(request):
+    return render(request, 'gestion-pacientes.html')
 
-def historialMedico (request):
-    docAux = get_template('historial-medico.html')
-    document = docAux.render()
-    return HttpResponse(document)
+def historialMedico(request):
+    return render(request, 'historial-medico.html')
 
-def resultados (request):
-    docAux = get_template('resultados.html')
-    document = docAux.render()
-    return HttpResponse(document)
+def resultados(request):
+    return render(request, 'resultados.html')

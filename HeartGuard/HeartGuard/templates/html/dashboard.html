@@ -14,21 +14,15 @@
         <h2>Panel de Control</h2>
         <ul>
           <li>
-            <a href="resultados.html" target="content-frame"
-              >Resultados de Análisis</a
-            >
+            <a href="{% url 'resultados' %}" target="content-frame">Resultados de Análisis</a>
           </li>
           <li>
-            <a href="gestion-pacientes.html" target="content-frame"
-              >Gestión de Pacientes</a
-            >
+            <a href="{% url 'gestionPacientes' %}" target="content-frame">Gestión de Pacientes</a>
           </li>
           <li>
-            <a href="historial-medico.html" target="content-frame"
-              >Historial Médico</a
-            >
+            <a href="{% url 'historialMedico' %}" target="content-frame">Historial Médico</a>
           </li>
-          <li><a href="login-roles.html">Cerrar Sesión</a></li>
+          <li><a href="{% url 'login' %}">Cerrar Sesión</a></li>
         </ul>
       </nav>
 
@@ -37,7 +31,7 @@
         <iframe
           name="content-frame"
           class="content-frame"
-          src="resultados.html"
+          src="{% url 'resultados' %}"
         ></iframe>
       </div>
     </div>
