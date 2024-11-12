@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Principal Paciente</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Barra lateral de navegación -->
+      <nav class="sidebar">
+        <h2>Panel de Control</h2>
+        <ul>
+          <li>
+            <a href="{% url 'resultados' %}" target="content-frame">Resultados de Análisis</a>
+          </li>
+          <li>
+            <a href="{% url 'gestionPacientes' %}" target="content-frame">Gestión de Pacientes</a>
+          </li>
+          <li>
+            <a href="{% url 'historialMedico' %}" target="content-frame">Historial Médico</a>
+          </li>
+          <li><a href="{% url 'login' %}">Cerrar Sesión</a></li>
+        </ul>
+      </nav>
+
+      <!-- Contenido Principal -->
+      <div class="content">
+        <iframe
+          name="content-frame"
+          class="content-frame"
+          src="{% url 'resultados' %}"
+
+        ></iframe>
+      </div>
+    </div>
+  </body>
+</html>
