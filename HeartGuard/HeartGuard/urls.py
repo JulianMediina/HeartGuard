@@ -20,12 +20,19 @@ from . import views
 
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
     path('login/',views.login_view, name = 'login'),
-    path('medico_dashboard/', views.medico_dashboard, name='medico_dashboard'),
-    path('paciente_dashboard/', views.paciente_dashboard, name='paciente_dashboard'),
     path('registro/', views.registrar_usuario,name="registrar_usuario"),
-    path('gestionPacientes/',views.gestionPacientes, name = 'gestionPacientes'),
-    path('historialMedico/',views.historialMedico, name = 'historialMedico'),
-    path('resultados/', views.resultados, name='resultados'),
+
+    path('medico_dashboard/', views.medico_dashboard, name='medico_dashboard'),
+    path('configuracion_medico/', views.configuracion_medico, name='configuracion_medico'),
+    path('historial_medico/', views.historial_medico, name='historial_medico'),
+    path('notificaciones/', views.cnotificaciones, name='notificaciones'),
+    path('perfil_medico/', views.perfil_medico, name='perfil_medico'),
+    path('visualizacion_analisis/', views.visualizacion_analisis, name='visualizacion_analisis'),
+    
+
+    path('paciente_dashboard/', views.paciente_dashboard, name='paciente_dashboard'),
+
 ]

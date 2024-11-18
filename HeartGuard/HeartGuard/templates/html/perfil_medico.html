@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil Médico</title>
+    {% load static %}
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+  </head>
+  <body>
+    <div class="container perfil-container">
+      <h2 class="text-center">Perfil Médico</h2>
+      <div class="perfil-info">
+        <p><strong>Nombre:</strong> Dr. Juan Pérez</p>
+        <p><strong>Correo Electrónico:</strong> juan.perez@medico.com</p>
+        <p><strong>Especialidad:</strong> Cardiología</p>
+        <p><strong>Teléfono:</strong> +123456789</p>
+      </div>
+      <div class="text-center">
+        <a href="{% url 'configuracion_medico' %}" class="btn btn-primary btn-lg">Actualizar Perfil</a>
+      </div>
+    </div>
+  </body>
+</html>
+

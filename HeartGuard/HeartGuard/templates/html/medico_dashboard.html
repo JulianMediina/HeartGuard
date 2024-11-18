@@ -1,40 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Panel Principal Medico</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Médico</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'style.css' %}" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
     <div class="dashboard-container">
-      <!-- Barra lateral de navegación -->
-      <nav class="sidebar">
-        <h2>Panel de Control</h2>
-        <ul>
-          <li>
-            <a href="{% url 'resultados' %}" target="content-frame">Resultados de Análisis</a>
-          </li>
-          <li>
-            <a href="{% url 'gestionPacientes' %}" target="content-frame">Gestión de Pacientes</a>
-          </li>
-          <li>
-            <a href="{% url 'historialMedico' %}" target="content-frame">Historial Médico</a>
-          </li>
-          <li><a href="{% url 'login' %}">Cerrar Sesión</a></li>
-        </ul>
-      </nav>
-
-      <!-- Contenido Principal -->
-      <div class="content">
-        <iframe
-          name="content-frame"
-          class="content-frame"
-          src="{% url 'resultados' %}"
-
-        ></iframe>
-      </div>
+        <!-- Barra lateral -->
+        <nav class="sidebar">
+            <h2>Panel Médico</h2>
+            <ul>
+                <li><a href="{% url 'perfil_medico' %}" target="content-frame">Perfil</a></li>
+                <li><a href="{% url 'visualizacion_analisis' %}" target="content-frame">Visualización</a></li>
+                <li><a href="{% url 'notificaciones' %}" target="content-frame">Notificaciones</a></li>
+                <li><a href="{% url 'historial_medico' %}" target="content-frame">Historial Médico</a></li>
+                <li><a href="{% url 'configuracion_medico' %}" target="content-frame">Configuración</a></li>
+                <li><a href="{% url 'login' %}">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+        <!-- Contenido principal -->
+        <div class="content">
+            <iframe src="{% url 'perfil_medico' %}" name="content-frame"></iframe>
+        </div>
     </div>
-  </body>
+</body>
 </html>
