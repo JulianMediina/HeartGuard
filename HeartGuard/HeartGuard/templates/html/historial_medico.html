@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historial Médico</title>
+    {% load static %}
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Historial Médico</h2>
+      <form>
+        <div class="form-group">
+          <label for="filtro_fecha">Filtrar por Fecha</label>
+          <input type="date" class="form-control" id="filtro_fecha" />
+        </div>
+        <div class="form-group">
+          <label for="filtro_riesgo">Filtrar por Nivel de Riesgo</label>
+          <select class="form-control" id="filtro_riesgo">
+            <option>Alto Riesgo</option>
+            <option>Medio Riesgo</option>
+            <option>Bajo Riesgo</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Consultar</button>
+      </form>
+
+      <h3>Historial</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Observaciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2024-11-01</td>
+            <td>Control de presión arterial normal.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

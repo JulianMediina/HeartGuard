@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import Medico, Paciente
 
+# Vista para el login
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -30,11 +31,7 @@ def login_view(request):
     
     return render(request, 'login.html')
 
-def paciente_dashboard(request):
-    return render(request, "paciente_dashboard.html")
-
-def medico_dashboard(request):
-    return render(request, "medico_dashboard.html")
+# Vista para el registro de usuarios
 def registrar_usuario(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -81,11 +78,30 @@ def registrar_usuario(request):
 
     return render(request, 'registrar_usuario.html')
 
-def gestionPacientes(request):
-    return render(request, 'gestion-pacientes.html')
+# Vista para el dashboard del médico
+def medico_dashboard(request):
+    return render(request, "medico_dashboard.html")
 
-def historialMedico(request):
-    return render(request, 'historial-medico.html')
+# Vista para el dashboard del paciente
+def paciente_dashboard(request):
+    return render(request, "paciente_dashboard.html")
 
-def resultados(request):
-    return render(request, 'resultados.html')
+# Vista para el perfil del médico
+def perfil_medico(request):
+    return render(request, 'perfil_medico.html')
+
+# Vista para la visualización y análisis
+def visualizacion_analisis(request):
+    return render(request, 'visualizacion_analisis.html')
+
+# Vista para las notificaciones
+def cnotificaciones(request):
+    return render(request, 'notificaciones.html')
+
+# Vista para el historial médico
+def historial_medico(request):
+    return render(request, 'historial_medico.html')
+
+# Vista para la configuración del médico
+def configuracion_medico(request):
+    return render(request, 'configuracion_medico.html')
