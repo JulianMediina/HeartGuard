@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial Médico</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4 text-center">Visualización de Pacientes</h1>
+
+    <!-- Filtro por fecha -->
+    <div class="card mb-4">
+      <div class="card-header bg-secondary text-white">
+        Filtrar Pacientes por Fecha
+      </div>
+      <div class="card-body">
+        <form class="form-inline" method="get" action="/filtrar_pacientes">
+          <div class="form-group mr-3">
+            <label for="dia" class="mr-2">Día</label>
+            <input type="number" class="form-control" id="dia" name="dia" placeholder="Ej: 15" min="1" max="31">
+          </div>
+          <div class="form-group mr-3">
+            <label for="mes" class="mr-2">Mes</label>
+            <input type="number" class="form-control" id="mes" name="mes" placeholder="Ej: 6" min="1" max="12">
+          </div>
+          <div class="form-group mr-3">
+            <label for="anio" class="mr-2">Año</label>
+            <input type="number" class="form-control" id="anio" name="anio" placeholder="Ej: 2023" min="1900">
+          </div>
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Listado de Pacientes -->
+    <h3 class="mb-3">Listado de Pacientes</h3>
+    <table class="table table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Última Observación</th>
+          <th>Fecha de Registro</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Ejemplo de pacientes, reemplazar con datos dinámicos -->
+        <tr>
+          <td>1</td>
+          <td>Pedro Gómez</td>
+          <td>Observación sobre hipertensión</td>
+          <td>2023-06-15</td>
+          <td>
+            <a href="/detalle_paciente/1" class="btn btn-info btn-sm">Ver</a>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>María López</td>
+          <td>Observación sobre diabetes</td>
+          <td>2023-05-20</td>
+          <td>
+            <a href="/detalle_paciente/2" class="btn btn-info btn-sm">Ver</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
