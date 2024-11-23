@@ -82,26 +82,44 @@ def registrar_usuario(request):
 def medico_dashboard(request):
     return render(request, "medico_dashboard.html")
 
+# Vista para el perfil del médico
+def perfil_medico(request):
+    return render(request, 'medico/perfil_medico.html')
+
+# Vista para la visualización y análisis
+def visualizacion_analisis(request):
+    return render(request, 'medico/visualizacion_analisis.html')
+
+# Vista para las notificaciones
+def cnotificaciones(request):
+    return render(request, 'medico/notificaciones.html')
+
+# Vista para el historial médico
+def historial_medico(request):
+    return render(request, 'medico/historial_medico.html')
+
+# Vista para la configuración del médico
+def configuracion_medico(request):
+    return render(request, 'medico/configuracion_medico.html')
+
 # Vista para el dashboard del paciente
 def paciente_dashboard(request):
     return render(request, "paciente_dashboard.html")
 
-# Vista para el perfil del médico
-def perfil_medico(request):
-    return render(request, 'perfil_medico.html')
+# Vista para el perfil del paciente
+def perfil_paciente(request):
+    return render(request, 'paciente/perfil_paciente.html')
 
-# Vista para la visualización y análisis
-def visualizacion_analisis(request):
-    return render(request, 'visualizacion_analisis.html')
+# Vista para la visualización paciente
+def visualizacion_paciente(request):
+    return render(request, 'paciente/visualizacion_paciente.html')
 
-# Vista para las notificaciones
-def cnotificaciones(request):
-    return render(request, 'notificaciones.html')
+# Vista para la configuración del paciente
+def configuracion_paciente(request):
+    return render(request, 'paciente/configuracion_paciente.html')
 
-# Vista para el historial médico
-def historial_medico(request):
-    return render(request, 'historial_medico.html')
+# Vista para la detalles del paciente
+def detalles_resultados(request):
+    return render(request, 'paciente/detalles_resultados.html')
 
-# Vista para la configuración del médico
-def configuracion_medico(request):
-    return render(request, 'configuracion_medico.html')
+

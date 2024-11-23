@@ -7,26 +7,6 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}" />
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-    <script>
-      function toggleFields() {
-        const role = document.getElementById('role').value;
-        const medicoFields = document.getElementById('medico-fields');
-        const pacienteFields = document.getElementById('paciente-fields');
-
-        if (role === 'medico') {
-          medicoFields.style.display = 'block';
-          pacienteFields.style.display = 'none';
-        } else if (role === 'paciente') {
-          medicoFields.style.display = 'none';
-          pacienteFields.style.display = 'block';
-        } else {
-          medicoFields.style.display = 'none';
-          pacienteFields.style.display = 'none';
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', toggleFields);
-    </script>
   </head>
   <body>
     <div class="container mt-5">
@@ -61,44 +41,9 @@
                 <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required />
               </div>
 
-              <!-- Selección de Rol -->
-              <div class="form-group">
-                <label for="role">Rol</label>
-                <select id="role" name="role" class="form-control" required onchange="toggleFields()">
-                  <option value="">Seleccione un rol</option>
-                  <option value="medico">Médico</option>
-                  <option value="paciente">Paciente</option>
-                </select>
-              </div>
-
-              <!-- Campos específicos para Médico -->
-              <div id="medico-fields" style="display: none;">
-                <h3>Datos de Médico</h3>
-                <div class="form-group">
-                  <label for="medico_nombre">Nombre</label>
-                  <input type="text" id="medico_nombre" name="medico_nombre" class="form-control" />
-                </div>
-                <div class="form-group">
-                  <label for="medico_apellido">Apellido</label>
-                  <input type="text" id="medico_apellido" name="medico_apellido" class="form-control" />
-                </div>
-                <div class="form-group">
-                  <label for="medico_especialidad">Especialidad</label>
-                  <input type="text" id="medico_especialidad" name="medico_especialidad" class="form-control" />
-                </div>
-                <div class="form-group">
-                  <label for="medico_telefono">Teléfono</label>
-                  <input type="text" id="medico_telefono" name="medico_telefono" class="form-control" />
-                </div>
-              </div>
-
               <!-- Campos específicos para Paciente -->
-              <div id="paciente-fields" style="display: none;">
+              <div id="paciente-fields">
                 <h3>Datos de Paciente</h3>
-                <div class="form-group">
-                  <label for="paciente_nombre">Nombre</label>
-                  <input type="text" id="paciente_nombre" name="paciente_nombre" class="form-control" />
-                </div>
                 <div class="form-group">
                   <label for="paciente_direccion">Dirección</label>
                   <input type="text" id="paciente_direccion" name="paciente_direccion" class="form-control"/>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial Médico</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4 text-center">Historial Médico de Pacientes</h1>
+
+    <!-- Filtro por Número de Cédula -->
+    <div class="card mb-4">
+      <div class="card-header bg-dark text-white">
+        <h4>Filtrar por Número de Cédula</h4>
+      </div>
+      <div class="card-body">
+        <form method="get" action="/filtrar_por_cedula" class="form-inline justify-content-center">
+          <div class="form-group mr-3">
+            <label for="cedula" class="mr-2">Número de Cédula</label>
+            <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ej: 1234567890" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Información Completa del Paciente -->
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h4>Datos del Paciente</h4>
+      </div>
+      <div class="card-body">
+        <h5><strong>Nombre:</strong> Pedro Gómez</h5>
+        <h5><strong>Cédula:</strong> 1234567890</h5>
+        <h5><strong>Edad:</strong> 55</h5>
+        <h5><strong>Sexo:</strong> Masculino</h5>
+        <h5><strong>Última Consulta:</strong> 2023-06-15</h5>
+        
+        <h5><strong>Historial Médico:</strong></h5>
+        <ul>
+          <li>Hipertensión</li>
+          <li>Diabetes Tipo 2</li>
+        </ul>
+
+        <h5><strong>Datos de Salud:</strong></h5>
+        <p><strong>Presión Arterial:</strong> 140/90 mmHg</p>
+        <p><strong>Colesterol:</strong> 220 mg/dL</p>
+        <p><strong>Frecuencia Cardíaca:</strong> 80 bpm</p>
+        <p><strong>Resultado Análisis de Red Neuronal:</strong> Alto Riesgo Cardíaco</p>
+        
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
