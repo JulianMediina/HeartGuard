@@ -9,6 +9,8 @@ from django.db import IntegrityError
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from datetime import date
+
 # Vista para el login
 def login_view(request):
     if request.method == 'POST':
@@ -190,7 +192,25 @@ def configuracion_medico(request):
     return render(request, 'configuracion_medico.html')
 
 def logout_view(request):
-    from django.contrib.auth import logout
     logout(request)
     return redirect('login')
+def lista_pacientes(request):
+    pacientes = Paciente.objects.all()
+    dia = request.GET.get('dia')
+    mes = request.GET.get('mes')
+    anio = request.GET.get('anio')
+
+    # Filtro por fecha si los valores están presentes
+    if dia and mes and anio:
+        try:
+            fecha_filtro = date(int(anio), int(mes), int(dia))
+            pacientes = pacientes.filter(fecha_registro=fecha_filtro)
+        except ValueError:
+            pass  # Fecha inválida, ignora el filtro
+
+    return render(request, 'historial_pacientes.html', {'pacientes': pacientes})
+
+def detalle_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+    return render(request, 'detalle_paciente.html', {'paciente': paciente})
 

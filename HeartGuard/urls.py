@@ -31,6 +31,7 @@ urlpatterns = [
     path('notificaciones/', views.notificaciones, name='notificaciones'),
     path('perfil_medico/', views.perfil_medico, name='perfil_medico'),
     path('visualizacion_analisis/', views.visualizacion_analisis, name='visualizacion_analisis'),
+    path('detalle_paciente/<int:paciente_id>/', views.detalle_paciente, name='detalle_paciente'),
     path('logout/', views.logout_view, name='logout'),
     #Rutas para el paciente
     path('paciente_dashboard/', views.paciente_dashboard, name='paciente_dashboard'),

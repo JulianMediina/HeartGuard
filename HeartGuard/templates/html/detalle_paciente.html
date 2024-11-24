@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Paciente</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Detalle del Paciente</h1>
+        <p><strong>Nombre:</strong> {{ paciente.nombre }}</p>
+        <p><strong>Última Observación:</strong> {{ paciente.ultima_observacion }}</p>
+        <p><strong>Fecha de Registro:</strong> {{ paciente.fecha_registro }}</p>
+        <a href="{% url 'visualizacion_analisis' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</body>
+</html>

@@ -74,4 +74,12 @@ class Informe(models.Model):
 
     def __str__(self):
         return f"Informe de {self.paciente.nombre} - Fecha: {self.fecha.strftime('%d/%m/%Y')}"
+    
+class Historial(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='historiales')
+    fecha = models.DateField()
+    observacion = models.TextField()
+
+    def __str__(self):
+        return f"Historial de {self.paciente.nombre} - {self.fecha}"
 
