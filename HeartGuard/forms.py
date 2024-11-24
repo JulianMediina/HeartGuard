@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User  # Importamos el modelo User
-from .models import Paciente, Informe  # Importamos Informe para el nuevo campo
+from .models import Paciente, Medico,Informe  # Importamos Informe para el nuevo campo
 from django.core.exceptions import ValidationError
 
 class PacienteForm(forms.ModelForm):
@@ -86,3 +86,10 @@ class PacienteForm(forms.ModelForm):
             paciente.save()  # Finalmente guardamos el paciente
 
         return paciente
+class MedicoUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Medico
+        fields = ['nombres', 'apellidos', 'telefono', 'fecha_nacimiento', 'direccion', 'departamento', 'ciudad']
+        widgets = {
+            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+        }

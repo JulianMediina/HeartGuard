@@ -1,10 +1,14 @@
+import time 
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import Medico, Paciente
-from .forms import PacienteForm
+from .forms import PacienteForm, MedicoUpdateForm
 from django.db import IntegrityError
+from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 # Vista para el login
 def login_view(request):
     if request.method == 'POST':
@@ -20,9 +24,11 @@ def login_view(request):
             # Verificar el rol (Medico o Paciente) basado en la relación con los modelos
             if Medico.objects.filter(usuario=user).exists():
                 messages.success(request, "Inicio de sesión exitoso como Médico")
+                time.sleep(1.5)
                 return redirect('medico_dashboard')  # Redirigir a la página del médico
             elif Paciente.objects.filter(usuario=user).exists():
                 messages.success(request, "Inicio de sesión exitoso como Paciente")
+                time.sleep(1.5)
                 return redirect('paciente_dashboard')  # Redirigir a la página del paciente
             else:
                 messages.error(request, "El usuario no está asignado a un rol válido.")
@@ -89,10 +95,6 @@ def registrar_usuario(request):
 def medico_dashboard(request):
     return render(request, "medico_dashboard.html")
 
-# Vista para el perfil del médico
-def perfil_medico(request):
-    return render(request, 'perfil_medico.html')
-
 # Vista para la visualización y análisis
 def visualizacion_analisis(request):
     return render(request, 'visualizacion_analisis.html')
@@ -129,16 +131,66 @@ def configuracion_paciente(request):
 def detalles_resultados(request):
     return render(request, 'detalles_resultados.html')
 
-#vista update paciente
-def update_paciente(request, paciente_id):
-    paciente = get_object_or_404(Paciente, id=paciente_id)
-    if request.method == 'POST':
-        form = PacienteForm(request.POST, instance=paciente)
+# Decorador para restringir el acceso solo a médicos
+@login_required
+def perfil_medico(request):
+    medico = get_object_or_404(Medico, usuario=request.user)
+    if request.method == "POST":
+        form = MedicoUpdateForm(request.POST, instance=medico)
         if form.is_valid():
             form.save()
-            return redirect('perfil_paciente', paciente_id=paciente.id)
+            # Añade un mensaje de éxito si deseas
+            return redirect('perfil_medico')
     else:
-        form = PacienteForm(instance=paciente)
-    return render(request, 'perfil_paciente.html', {'paciente': paciente, 'form': form})
+        form = MedicoUpdateForm(instance=medico)
+    
+    return render(request, 'perfil_medico.html', {'medico': medico, 'form': form})
+def medico_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        if hasattr(request.user, 'medico'):
+            return view_func(request, *args, **kwargs)
+        return HttpResponseForbidden("Acceso denegado. Solo disponible para médicos.")
+    return wrapper
 
+@login_required
+@medico_required
+def perfil_medico(request):
+    # Obtener el perfil del médico asociado al usuario autenticado
+    medico = get_object_or_404(Medico, usuario=request.user)
+
+    if request.method == "POST":
+        form = MedicoUpdateForm(request.POST, instance=medico)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Información actualizada correctamente.")
+            return redirect('perfil_medico')
+    else:
+        form = MedicoUpdateForm(instance=medico)
+
+    # Pasar los datos del médico y el formulario al template
+    return render(request, 'perfil_medico.html', {'medico': medico, 'form': form})
+@login_required
+@medico_required
+def visualizacion_analisis(request):
+    return render(request, 'visualizacion_analisis.html')
+
+@login_required
+@medico_required
+def notificaciones(request):
+    return render(request, 'notificaciones.html')
+
+@login_required
+@medico_required
+def historial_medico(request):
+    return render(request, 'historial_medico.html')
+
+@login_required
+@medico_required
+def configuracion_medico(request):
+    return render(request, 'configuracion_medico.html')
+
+def logout_view(request):
+    from django.contrib.auth import logout
+    logout(request)
+    return redirect('login')
 
