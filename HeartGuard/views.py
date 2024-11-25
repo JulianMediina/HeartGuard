@@ -322,41 +322,7 @@ def cambiar_contrasena(request):
 
     return render(request, "cambiar_contrasena.html")
 @login_required
-@medico_required
 def logout_view(request):
     logout(request)
     messages.success(request, "Has cerrado sesión correctamente.")
     return redirect('login')
-
-def paciente_required(view_func):
-    """
-    Decorador para asegurar que el usuario autenticado es un paciente.
-    """
-    def _wrapped_view(request, *args, **kwargs):
-        if hasattr(request.user, 'paciente'):  # Verifica si el usuario tiene relación con el modelo Paciente
-            return view_func(request, *args, **kwargs)
-        raise PermissionDenied  # Retorna error 403 si no es paciente
-    return _wrapped_view
-@login_required
-@paciente_required
-def perfil_paciente(request):
-    # Obtiene al paciente relacionado con el usuario actual
-    paciente = get_object_or_404(Paciente, usuario=request.user)
-
-    if request.method == 'POST':
-        form = PacienteUpdateForm(request.POST, instance=paciente)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "¡Información actualizada correctamente!")
-            return redirect('perfil_paciente')
-        else:
-            messages.error(request, "Por favor corrige los errores del formulario.")
-    else:
-        form = PacienteUpdateForm(instance=paciente)
-
-    context = {
-        'paciente': paciente,
-        'form': form,
-    }
-    return render(request, 'perfil_paciente.html', context)
-
