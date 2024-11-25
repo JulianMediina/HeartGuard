@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from django.contrib.messages import constants as messages
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -135,4 +136,13 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'heartguardapp@gmail.com'  # Tu correo
 EMAIL_HOST_PASSWORD = 'gbth ljso dyvx uihx'  # Tu contraseña de correo
 DEFAULT_FROM_EMAIL = 'heartguardapp@gmail.com'  # El correo desde el que se enviarán los mensajes
+
+# Messages alert
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
 

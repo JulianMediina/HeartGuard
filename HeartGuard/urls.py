@@ -23,16 +23,16 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('login/',views.login_view, name = 'login'),
+    path('logout/', views.logout_view, name='logout'),
     path("registrar_usuario/", views.registrar_usuario, name="registrar_usuario"),
     #Rutas para el medico
     path('medico_dashboard/', views.medico_required(views.medico_dashboard), name='medico_dashboard'),
-    path('configuracion_medico/', views.configuracion_medico, name='configuracion_medico'),
+    path("cambiar_contrasena/", views.cambiar_contrasena, name="cambiar_contrasena"),
     path('historial_medico/', views.historial_medico, name='historial_medico'),
     path('notificaciones/', views.notificaciones, name='notificaciones'),
     path('perfil_medico/', views.perfil_medico, name='perfil_medico'),
     path('visualizacion_analisis/', views.visualizacion_analisis, name='visualizacion_analisis'),
     path('detalle_paciente/<int:paciente_id>/', views.detalle_paciente, name='detalle_paciente'),
-    path('logout/', views.logout_view, name='logout'),
     path('enviar_alerta/', views.enviar_alerta_personalizada, name='enviar_alerta_personalizada'),
     #Rutas para el paciente
     path('paciente_dashboard/', views.paciente_dashboard, name='paciente_dashboard'),

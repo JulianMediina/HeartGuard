@@ -110,10 +110,6 @@ def notificaciones(request):
 def historial_medico(request):
     return render(request, 'historial_medico.html')
 
-# Vista para la configuración del médico
-def configuracion_medico(request):
-    return render(request, 'configuracion_medico.html')
-
 # Vista para el dashboard del paciente
 def paciente_dashboard(request):
     return render(request, "paciente_dashboard.html")
@@ -189,14 +185,6 @@ def historial_medico(request):
     return render(request, 'notificaciones.html', {'pacientes': pacientes})
 
 
-@login_required
-@medico_required
-def configuracion_medico(request):
-    return render(request, 'configuracion_medico.html')
-
-def logout_view(request):
-    logout(request)
-    return redirect('login')
 def lista_pacientes(request):
     pacientes = Paciente.objects.all()
     dia = request.GET.get('dia')
@@ -293,3 +281,47 @@ def enviar_alerta_personalizada(request):
         form = NotificacionForm()
 
     return render(request, "enviar_alerta.html", {"form": form})
+
+@login_required
+def cambiar_contrasena(request):
+    if request.method == "POST":
+        contrasena_actual = request.POST.get("contraseña_actual")
+        nueva_contraseña = request.POST.get("nueva_contraseña")
+        confirmar_contraseña = request.POST.get("confirmar_contraseña")
+
+        user = request.user
+
+        # Verificar contraseña actual
+        if not user.check_password(contrasena_actual):
+            messages.error(request, "La contraseña actual no es correcta.")
+            return redirect("cambiar_contrasena")
+
+        # Verificar coincidencia de las contraseñas nuevas
+        if nueva_contraseña != confirmar_contraseña:
+            messages.error(request, "Las nuevas contraseñas no coinciden.")
+            return redirect("cambiar_contrasena")
+
+        # Verificar reglas de complejidad (opcional)
+        if len(nueva_contraseña) < 8 or not any(c.isdigit() for c in nueva_contraseña) or \
+           not any(c.isupper() for c in nueva_contraseña) or not any(c.islower() for c in nueva_contraseña):
+            messages.error(request, "La nueva contraseña no cumple con los requisitos de seguridad.")
+            return redirect("cambiar_contrasena")
+
+        # Cambiar la contraseña
+        user.set_password(nueva_contraseña)
+        user.save()
+
+
+        # Autenticar nuevamente al usuario
+        user = authenticate(username=user.username, password=nueva_contraseña)
+        if user:
+            login(request, user)
+            messages.success(request, "Contraseña cambiada exitosamente.")
+            return redirect("cambiar_contrasena")
+
+    return render(request, "cambiar_contrasena.html")
+@login_required
+def logout_view(request):
+    logout(request)
+    messages.success(request, "Has cerrado sesión correctamente.")
+    return redirect('login')
