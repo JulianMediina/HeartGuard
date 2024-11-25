@@ -127,4 +127,12 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 X_FRAME_OPTIONS = 'ALLOWALL'
 
+# Email field
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Usando Gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'heartguardapp@gmail.com'  # Tu correo
+EMAIL_HOST_PASSWORD = 'gbth ljso dyvx uihx'  # Tu contraseña de correo
+DEFAULT_FROM_EMAIL = 'heartguardapp@gmail.com'  # El correo desde el que se enviarán los mensajes
 

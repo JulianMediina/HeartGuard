@@ -83,3 +83,10 @@ class Historial(models.Model):
     def __str__(self):
         return f"Historial de {self.paciente.nombre} - {self.fecha}"
 
+class Notificacion(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="notificaciones")
+    fecha_envio = models.DateTimeField(auto_now_add=True)  # Fecha y hora en que se envió la notificación
+    mensaje = models.TextField()  # Contenido del mensaje enviado
+
+    def __str__(self):
+        return f"Notificación para {self.paciente.nombres} {self.paciente.apellidos} - {self.fecha_envio.strftime('%d/%m/%Y %H:%M')}"

@@ -3,13 +3,14 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.models import User
-from .models import Medico, Paciente
-from .forms import PacienteForm, MedicoUpdateForm
+from .models import Medico, Paciente, Notificacion
+from .forms import PacienteForm, MedicoUpdateForm,NotificacionForm
 from django.db import IntegrityError
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from datetime import date
+from django.core.mail import send_mail
 
 # Vista para el login
 def login_view(request):
@@ -102,7 +103,7 @@ def visualizacion_analisis(request):
     return render(request, 'visualizacion_analisis.html')
 
 # Vista para las notificaciones
-def cnotificaciones(request):
+def notificaciones(request):
     return render(request, 'notificaciones.html')
 
 # Vista para el historial médico
@@ -184,7 +185,9 @@ def notificaciones(request):
 @login_required
 @medico_required
 def historial_medico(request):
-    return render(request, 'historial_medico.html')
+    pacientes = Paciente.objects.all()
+    return render(request, 'notificaciones.html', {'pacientes': pacientes})
+
 
 @login_required
 @medico_required
@@ -214,3 +217,79 @@ def detalle_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
     return render(request, 'detalle_paciente.html', {'paciente': paciente})
 
+#notificaciones
+def notificaciones_medicas(request):
+    # Lista de pacientes con alto riesgo cardíaco (ejemplo)
+    pacientes_riesgo = Paciente.objects.filter(output=1)  # Pacientes con riesgo alto
+    
+    if request.method == 'POST':
+        # Enviar alerta personalizada
+        paciente_id = request.POST.get('paciente')
+        mensaje = request.POST.get('mensaje')
+        
+        paciente = Paciente.objects.get(id=paciente_id)
+        
+        # Enviar el correo
+        send_mail(
+            'Alerta Médica: Riesgo Cardíaco',
+            mensaje,
+            'heartguardapp@gmail.com',  # Remitente
+            [paciente.user.email],  # Destinatario (correo del paciente)
+            fail_silently=False,
+        )
+        return HttpResponse('Alerta enviada con éxito.')
+
+    return render(request, 'notificaciones.html', {'pacientes_riesgo': pacientes_riesgo})
+
+def enviar_notificaciones_automaticas():
+    pacientes_en_riesgo = Paciente.objects.filter(informes__output=1).distinct()
+
+    for paciente in pacientes_en_riesgo:
+        mensaje = (
+            f"Estimado/a {paciente.nombres} {paciente.apellidos},\n\n"
+            "Nuestro sistema ha detectado que usted podría estar en alto riesgo cardíaco. "
+            "Recomendamos que agende una consulta con su médico de cabecera lo antes posible."
+        )
+        
+        # Enviar correo
+        send_mail(
+            subject="Alerta Médica: Riesgo Cardíaco",
+            message=mensaje,
+            from_email="notificaciones@hospital.com",
+            recipient_list=[paciente.usuario.email],
+            fail_silently=False,
+        )
+        
+        # Registrar la notificación en el sistema
+        Notificacion.objects.create(
+            paciente=paciente,
+            mensaje=mensaje,
+        )
+def enviar_alerta_personalizada(request):
+    if request.method == "POST":
+        form = NotificacionForm(request.POST)
+        if form.is_valid():
+            paciente = form.cleaned_data["paciente"]
+            mensaje = form.cleaned_data["mensaje"]
+            
+            # Enviar correo
+            send_mail(
+                subject="Alerta Médica Personalizada",
+                message=mensaje,
+                from_email="notificaciones@hospital.com",
+                recipient_list=[paciente.usuario.email],
+                fail_silently=False,
+            )
+            
+            # Registrar la notificación en el sistema
+            Notificacion.objects.create(
+                paciente=paciente,
+                mensaje=mensaje,
+            )
+            
+            messages.success(request, "Alerta enviada correctamente.")
+            return redirect("notificaciones")  # Cambia "notificaciones" al nombre de tu vista correspondiente
+    else:
+        form = NotificacionForm()
+
+    return render(request, "enviar_alerta.html", {"form": form})

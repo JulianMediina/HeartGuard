@@ -18,20 +18,18 @@
       <div class="card-body">
         <p>Las siguientes notificaciones han sido generadas automáticamente para pacientes con alto riesgo cardíaco:</p>
         <ul class="list-group">
-          <li class="list-group-item">
-            <strong>Paciente:</strong> Pedro Gómez
-            <br>
-            <strong>Notificación:</strong> Alta probabilidad de riesgo cardíaco. Se recomienda seguimiento cercano.
-            <br>
-            <span class="text-muted">Fecha: 2023-06-15</span>
-          </li>
-          <li class="list-group-item">
-            <strong>Paciente:</strong> María López
-            <br>
-            <strong>Notificación:</strong> Elevado riesgo de infarto debido a hipertensión. Se sugiere evaluación inmediata.
-            <br>
-            <span class="text-muted">Fecha: 2023-05-20</span>
-          </li>
+          {% for informe in pacientes_riesgo %}
+            <li class="list-group-item">
+              <strong>Paciente:</strong> {{ informe.paciente.nombres }} {{ informe.paciente.apellidos }}
+              <br>
+              <strong>Notificación:</strong> Alta probabilidad de riesgo cardíaco. Se recomienda seguimiento cercano.
+              <br>
+              <span class="text-muted">Fecha de Informe: {{ informe.fecha }}</span>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-center text-muted">No hay pacientes de alto riesgo registrados.</li>
+          {% endfor %}
+        </ul>
         </ul>
       </div>
     </div>
@@ -42,13 +40,14 @@
         Enviar Alerta Personalizada a Pacientes
       </div>
       <div class="card-body">
-        <form method="post" action="/enviar_alerta">
+        <form method="post" action="{% url 'enviar_alerta_personalizada' %}">
+          {% csrf_token %}
           <div class="form-group">
             <label for="paciente">Seleccionar Paciente</label>
             <select class="form-control" id="paciente" name="paciente">
-              <option>Pedro Gómez</option>
-              <option>María López</option>  
-              <!-- Aquí pueden agregarse más pacientes dinámicamente -->
+              {% for paciente in pacientes %}
+                <option value="{{ paciente.id }}">{{ paciente.nombres }} {{ paciente.apellidos }}</option>
+              {% endfor %}
             </select>
           </div>
 
@@ -61,6 +60,17 @@
         </form>
       </div>
     </div>
+
+    <!-- Mensajes de éxito o error -->
+    {% if messages %}
+    <div class="mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

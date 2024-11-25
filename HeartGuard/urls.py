@@ -33,6 +33,7 @@ urlpatterns = [
     path('visualizacion_analisis/', views.visualizacion_analisis, name='visualizacion_analisis'),
     path('detalle_paciente/<int:paciente_id>/', views.detalle_paciente, name='detalle_paciente'),
     path('logout/', views.logout_view, name='logout'),
+    path('enviar_alerta/', views.enviar_alerta_personalizada, name='enviar_alerta_personalizada'),
     #Rutas para el paciente
     path('paciente_dashboard/', views.paciente_dashboard, name='paciente_dashboard'),
     path('configuracion_paciente/', views.configuracion_paciente, name='configuracion_paciente'),

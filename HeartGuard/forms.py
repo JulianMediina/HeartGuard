@@ -93,3 +93,7 @@ class MedicoUpdateForm(forms.ModelForm):
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class NotificacionForm(forms.Form):
+    paciente = forms.ModelChoiceField(queryset=Paciente.objects.all(), label="Seleccionar Paciente")
+    mensaje = forms.CharField(widget=forms.Textarea, label="Mensaje de Alerta")
