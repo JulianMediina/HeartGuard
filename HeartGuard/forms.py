@@ -97,3 +97,16 @@ class MedicoUpdateForm(forms.ModelForm):
 class NotificacionForm(forms.Form):
     paciente = forms.ModelChoiceField(queryset=Paciente.objects.all(), label="Seleccionar Paciente")
     mensaje = forms.CharField(widget=forms.Textarea, label="Mensaje de Alerta")
+
+class PacienteUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Paciente
+        fields = ['nombres', 'apellidos', 'direccion', 'telefono', 'fecha_nacimiento', 'departamento', 'ciudad']
+        widgets = {
+            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
