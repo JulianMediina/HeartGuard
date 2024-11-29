@@ -103,14 +103,6 @@ def medico_dashboard(request):
 def visualizacion_analisis(request):
     return render(request, 'visualizacion_analisis.html')
 
-# Vista para las notificaciones
-def notificaciones(request):
-    return render(request, 'notificaciones.html')
-
-# Vista para el historial médico
-def historial_medico(request):
-    return render(request, 'historial_medico.html')
-
 # Vista para el dashboard del paciente
 def paciente_dashboard(request):
     return render(request, "paciente_dashboard.html")
@@ -177,13 +169,14 @@ def visualizacion_analisis(request):
 @login_required
 @medico_required
 def notificaciones(request):
-    return render(request, 'notificaciones.html')
+    pacientes = Paciente.objects.all()
+    return render(request, 'notificaciones.html', {'pacientes': pacientes})
 
 @login_required
 @medico_required
 def historial_medico(request):
     pacientes = Paciente.objects.all()
-    return render(request, 'notificaciones.html', {'pacientes': pacientes})
+    return render(request, 'historial_medico.html', {'pacientes': pacientes})
 
 
 def lista_pacientes(request):
