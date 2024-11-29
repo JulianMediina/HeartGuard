@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cambiar Contraseña</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .container {
+      max-width: 600px;
+    }
+    .form-control {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Cambiar Contraseña</h1>
+
+    <!-- Formulario de Cambio de Contraseña -->
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h5>Cambiar su Contraseña</h5>
+      </div>
+      <div class="card-body">
+        <!-- Asegurarse de incluir el token CSRF -->
+        <form method="post" action="{% url 'cambiar_contrasena' %}">
+          {% csrf_token %}
+          
+          <!-- Mensajes de error generales -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <div class="form-group">
+            <label for="contraseña_actual">Contraseña Actual</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="contraseña_actual" 
+              name="contraseña_actual" 
+              placeholder="Ingrese su contraseña actual" 
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="nueva_contraseña">Nueva Contraseña</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="nueva_contraseña" 
+              name="nueva_contraseña" 
+              placeholder="Ingrese la nueva contraseña" 
+              required
+            >
+            <small id="passwordHelp" class="form-text text-muted">
+              La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una minúscula y un número.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmar_contraseña">Confirmar Nueva Contraseña</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="confirmar_contraseña" 
+              name="confirmar_contraseña" 
+              placeholder="Confirme la nueva contraseña" 
+              required
+            >
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Cambiar Contraseña</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
