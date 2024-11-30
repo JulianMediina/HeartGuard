@@ -15,6 +15,7 @@ from django.core.exceptions import PermissionDenied
 
 # Vista para el login
 def login_view(request):
+    
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
