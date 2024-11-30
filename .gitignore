@@ -1,0 +1,29 @@
+# Entorno virtual
+venv/
+.env
+
+# Base de datos local (si es SQLite, por ejemplo)
+db.sqlite3
+
+# Archivos de compilación
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Archivos de caché de Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.db
+.idea/
+.vscode/
+
+# Archivos temporales
+*.bak
+*.swp
+
+# Archivos de configuración locales (por ejemplo, configuraciones de desarrollo)
+config.py
+settings_local.py
