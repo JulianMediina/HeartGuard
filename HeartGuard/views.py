@@ -28,11 +28,9 @@ def login_view(request):
             # Verificar el rol (Medico o Paciente) basado en la relación con los modelos
             if Medico.objects.filter(usuario=user).exists():
                 messages.success(request, "Inicio de sesión exitoso como Médico")
-                time.sleep(1.5)
                 return redirect('medico_dashboard')  # Redirigir a la página del médico
             elif Paciente.objects.filter(usuario=user).exists():
                 messages.success(request, "Inicio de sesión exitoso como Paciente")
-                time.sleep(1.5)
                 return redirect('paciente_dashboard')  # Redirigir a la página del paciente
             else:
                 messages.error(request, "El usuario no está asignado a un rol válido.")
