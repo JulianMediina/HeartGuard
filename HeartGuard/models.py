@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 # Modelo Medico
 class Medico(models.Model):
@@ -51,6 +52,10 @@ class Paciente(models.Model):
 
 # Modelo Informe
 class Informe(models.Model):
+    # Nuevo campo para asociar el documento del paciente
+    documento = models.CharField(max_length=20, verbose_name="Documento del Paciente")
+
+    # Relaciones
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="informes")
     medico = models.ForeignKey(Medico, on_delete=models.SET_NULL, null=True, blank=True, related_name="informes")
     fecha = models.DateTimeField(auto_now_add=True)
@@ -72,8 +77,17 @@ class Informe(models.Model):
     output = models.IntegerField(choices=[(0, 'Enfermedad Ausente'), (1, 'Enfermedad Presente')])
     observaciones = models.TextField(null=True, blank=True, verbose_name="Observaciones")
 
+    def clean(self):
+        """
+        Verifica que el documento corresponda a un paciente existente y asigna automáticamente el campo paciente.
+        """
+        try:
+            self.paciente = Paciente.objects.get(numero_documento=self.documento)
+        except Paciente.DoesNotExist:
+            raise ValidationError(f"No se encontró un paciente con el documento: {self.documento}")
+
     def __str__(self):
-        return f"Informe de {self.paciente.nombre} - Fecha: {self.fecha.strftime('%d/%m/%Y')}"
+        return f"Informe de {self.paciente.nombres} - Fecha: {self.fecha.strftime('%d/%m/%Y')}"
     
 class Historial(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='historiales')
