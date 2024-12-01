@@ -16,6 +16,7 @@ Este proyecto utiliza Django con MySQL como base de datos.
    ```bash
    https://github.com/JulianMediina/HeartGuard.git
    cd HeartGuard
+   pip install -r requirements.txt
    py manage.py makemigrations
    py manage.py migrate
    py manage.py runserver
