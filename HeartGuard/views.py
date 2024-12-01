@@ -1,4 +1,3 @@
-import time 
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
@@ -12,6 +11,8 @@ from django.contrib.auth import logout
 from datetime import date
 from django.core.mail import send_mail
 from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
+
 
 # Vista para el login
 def login_view(request):

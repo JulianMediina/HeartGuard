@@ -40,5 +40,4 @@ urlpatterns = [
     path('perfil_paciente/', views.perfil_paciente, name='perfil_paciente'),
     path('visualizacion_paciente/', views.visualizacion_paciente, name='visualizacion_paciente'),
     path('detalles_resultados/', views.detalles_resultados, name='detalles_resultados'),
-
 ]

@@ -77,6 +77,9 @@ class Informe(models.Model):
     output = models.IntegerField(choices=[(0, 'Enfermedad Ausente'), (1, 'Enfermedad Presente')])
     observaciones = models.TextField(null=True, blank=True, verbose_name="Observaciones")
 
+    # Campo para controlar si los datos han sido utilizados para reentrenar
+    is_used_for_training = models.BooleanField(default=False, verbose_name="Usado para Reentrenar")
+
     def clean(self):
         """
         Verifica que el documento corresponda a un paciente existente y asigna automáticamente el campo paciente.
@@ -88,7 +91,7 @@ class Informe(models.Model):
 
     def __str__(self):
         return f"Informe de {self.paciente.nombres} - Fecha: {self.fecha.strftime('%d/%m/%Y')}"
-    
+
 class Historial(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='historiales')
     fecha = models.DateField()
