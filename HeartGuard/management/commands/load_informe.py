@@ -103,7 +103,9 @@ class Command(BaseCommand):
                         slp=row['slp'],
                         caa=row['caa'],
                         thall=row['thall'],
-                        output=output  # Asignar la predicción al campo 'output'
+                        output=output,  # Asignar la predicción al campo 'output'
+                        documento=row['documento'],
+                        is_used_for_training = False
                     )
 
                     self.stdout.write(self.style.SUCCESS(f"Informe creado para el paciente con documento {documento}, predicción: {output}."))
