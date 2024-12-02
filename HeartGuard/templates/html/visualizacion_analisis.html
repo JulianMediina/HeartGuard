@@ -16,18 +16,19 @@
         Filtrar Pacientes por Fecha
       </div>
       <div class="card-body">
-        <form class="form-inline" method="get" action="{% url 'visualizacion_analisis' %}">
+        <form class="form-inline" method="get" action="{% url 'visualizacion_analisis' %}" novalidate>
+          {% csrf_token %}
           <div class="form-group mr-3">
             <label for="dia" class="mr-2">Día</label>
-            <input type="number" class="form-control" id="dia" name="dia" placeholder="Ej: 15" min="1" max="31">
+            <input type="number" class="form-control" id="dia" name="dia" placeholder="Ej: 15" min="1" max="31" aria-label="Día">
           </div>
           <div class="form-group mr-3">
             <label for="mes" class="mr-2">Mes</label>
-            <input type="number" class="form-control" id="mes" name="mes" placeholder="Ej: 6" min="1" max="12">
+            <input type="number" class="form-control" id="mes" name="mes" placeholder="Ej: 6" min="1" max="12" aria-label="Mes">
           </div>
           <div class="form-group mr-3">
             <label for="anio" class="mr-2">Año</label>
-            <input type="number" class="form-control" id="anio" name="anio" placeholder="Ej: 2023" min="1900">
+            <input type="number" class="form-control" id="anio" name="anio" placeholder="Ej: 2023" min="1900" aria-label="Año">
           </div>
           <button type="submit" class="btn btn-primary">Filtrar</button>
         </form>
@@ -36,34 +37,70 @@
 
     <!-- Listado de Pacientes -->
     <h3 class="mb-3">Listado de Pacientes</h3>
-    <table class="table table-striped">
-      <thead class="thead-dark">
-        <tr>
-          <th>#</th>
-          <th>Nombre</th>
-          <th>Última Observación</th>
-          <th>Fecha de Registro</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for paciente in pacientes %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{ paciente.nombres }} {{ paciente.apellidos }}</td>
-          <td>{{ paciente.ultima_observacion|default:"Sin observaciones" }}</td>
-          <td>{{ paciente.fecha_registro|date:"Y-m-d" }}</td>
-          <td>
-            <a href="{% url 'detalle_paciente' paciente.id %}" class="btn btn-info btn-sm">Ver</a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="5" class="text-center">No hay pacientes registrados en esta fecha.</td>
-        </tr>
+    <div style="overflow-x: auto;">
+      <table class="table table-striped">
+        <thead class="thead-dark">
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Fecha de Ingreso</th>
+            <th>Observaciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for paciente in page_obj %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ paciente.usuario.first_name }} {{ paciente.usuario.last_name }}</td>
+            <td>{{ paciente.usuario.username }}</td>
+            <td>{{ paciente.usuario.date_joined|date:"Y-m-d" }}</td>
+            <td>{{ paciente.observaciones|default:"Sin observaciones" }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">No hay pacientes registrados en esta fecha.</td>
+          </tr>
+          {% endfor %}
+        </tbody>>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <nav aria-label="Paginación">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+            &laquo;
+          </a>
+        </li>
+        {% endif %}
+
+        {% for num in visible_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+          <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
         {% endfor %}
-      </tbody>
-    </table>
+
+        {% if visible_range|last < page_obj.paginator.num_pages %}
+        <li class="page-item disabled">
+          <span class="page-link">...</span>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+        </li>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Siguiente">
+            &raquo;
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

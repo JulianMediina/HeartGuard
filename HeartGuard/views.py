@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.models import User
-from .models import Medico, Paciente, Notificacion
+from .models import Medico, Paciente, Notificacion,Informe
 from .forms import  MedicoUpdateForm,NotificacionForm,PacienteUpdateForm
 from django.db import IntegrityError
 from django.http import HttpResponseForbidden,HttpResponse
@@ -12,6 +12,8 @@ from datetime import date
 from django.core.mail import send_mail
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
+from django.core.paginator import Paginator
+from datetime import datetime
 
 
 # Vista para el login
@@ -98,10 +100,6 @@ def registrar_usuario(request):
 # Vista para el dashboard del médico
 def medico_dashboard(request):
     return render(request, "medico_dashboard.html")
-
-# Vista para la visualización y análisis
-def visualizacion_analisis(request):
-    return render(request, 'visualizacion_analisis.html')
 
 # Vista para el dashboard del paciente
 def paciente_dashboard(request):
@@ -247,34 +245,6 @@ def enviar_notificaciones_automaticas():
             paciente=paciente,
             mensaje=mensaje,
         )
-def enviar_alerta_personalizada(request):
-    if request.method == "POST":
-        form = NotificacionForm(request.POST)
-        if form.is_valid():
-            paciente = form.cleaned_data["paciente"]
-            mensaje = form.cleaned_data["mensaje"]
-            
-            # Enviar correo
-            send_mail(
-                subject="Alerta Médica Personalizada",
-                message=mensaje,
-                from_email="notificaciones@hospital.com",
-                recipient_list=[paciente.usuario.email],
-                fail_silently=False,
-            )
-            
-            # Registrar la notificación en el sistema
-            Notificacion.objects.create(
-                paciente=paciente,
-                mensaje=mensaje,
-            )
-            
-            messages.success(request, "Alerta enviada correctamente.")
-            return redirect("notificaciones")  # Cambia "notificaciones" al nombre de tu vista correspondiente
-    else:
-        form = NotificacionForm()
-
-    return render(request, "enviar_alerta.html", {"form": form})
 
 @login_required
 def cambiar_contrasena(request):
@@ -319,3 +289,103 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Has cerrado sesión correctamente.")
     return redirect('login')
+# Vista para la visualización y análisis
+login_required
+def visualizacion_analisis(request):
+    # Obtener parámetros de fecha desde la solicitud
+    dia = request.GET.get('dia')
+    mes = request.GET.get('mes')
+    anio = request.GET.get('anio')
+
+    # Filtrar pacientes según fecha si se especifica
+    if dia and mes and anio:
+        try:
+            # Crear un objeto de fecha a partir de los parámetros
+            fecha_filtro = datetime(int(anio), int(mes), int(dia))
+            # Filtrar pacientes por fecha de ingreso del usuario
+            pacientes = Paciente.objects.filter(
+                usuario__date_joined__lte=fecha_filtro
+            ).select_related('usuario')
+        except ValueError:
+            # En caso de que los parámetros de fecha sean inválidos
+            pacientes = Paciente.objects.none()
+            messages.error(request, "Fecha inválida. Asegúrese de ingresar una fecha válida.")
+    else:
+        # Si no se seleccionan filtros, mostrar todos los pacientes
+        pacientes = Paciente.objects.select_related('usuario').all()
+
+    # Paginación: 50 pacientes por página
+    paginator = Paginator(pacientes, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Renderizar la plantilla con los pacientes paginados
+    return render(request, 'visualizacion_analisis.html', {'page_obj': page_obj})
+
+# Vista para las notificaciones de pacientes
+@login_required
+def notificaciones(request):
+    pacientes = Paciente.objects.all()
+    return render(request, 'notificaciones.html', {'pacientes': pacientes})
+
+# Vista para enviar una alerta personalizada
+@login_required
+def enviar_alerta_personalizada(request):
+    if request.method == "POST":
+        cedula = request.POST.get("cedula")
+        mensaje = request.POST.get("mensaje")
+
+        if not cedula or not mensaje:
+            messages.error(request, "Todos los campos son obligatorios.")
+            return redirect("enviar_alerta_personalizada")
+
+        try:
+            # Buscar al paciente por número de cédula
+            paciente = Paciente.objects.get(numero_documento=cedula)
+
+            # Enviar correo
+            send_mail(
+                subject="Alerta Médica Personalizada",
+                message=mensaje,
+                from_email="heartguardapp@gmail.com",
+                recipient_list=[paciente.usuario.email],
+                fail_silently=False,
+            )
+
+            # Registrar la notificación
+            Notificacion.objects.create(
+                paciente=paciente,
+                mensaje=mensaje,
+            )
+
+            messages.success(request, "Alerta enviada correctamente.")
+            return redirect("enviar_alerta_personalizada")
+
+        except Paciente.DoesNotExist:
+            messages.error(request, "No se encontró un paciente con el número de identificación proporcionado.")
+            return redirect("enviar_alerta_personalizada")
+
+    return render(request, "notificaciones.html")
+
+def filtrar_por_cedula(request):
+    """
+    Filtra el historial médico de un paciente utilizando su número de documento.
+    """
+    cedula = request.GET.get("cedula", None)  # Obtener la cédula desde los parámetros GET
+    paciente = None
+    historial = []
+
+    if cedula:
+        try:
+            # Buscar al paciente por su número de documento
+            paciente = Paciente.objects.get(numero_documento=cedula)
+            # Obtener los informes relacionados con el paciente, ordenados por fecha descendente
+            historial = Informe.objects.filter(paciente=paciente).order_by('-fecha')
+        except Paciente.DoesNotExist:
+            paciente = None  # Si el paciente no existe, mantenerlo como None
+
+    return render(
+        request,
+        "historial_medico.html",  # Plantilla HTML para mostrar el historial
+        {"paciente": paciente, "historial": historial}  # Contexto para la plantilla
+    )

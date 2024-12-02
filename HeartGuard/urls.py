@@ -33,11 +33,14 @@ urlpatterns = [
     path('perfil_medico/', views.perfil_medico, name='perfil_medico'),
     path('visualizacion_analisis/', views.visualizacion_analisis, name='visualizacion_analisis'),
     path('detalle_paciente/<int:paciente_id>/', views.detalle_paciente, name='detalle_paciente'),
-    path('enviar_alerta/', views.enviar_alerta_personalizada, name='enviar_alerta_personalizada'),
+    
     #Rutas para el paciente
     path('paciente_dashboard/', views.paciente_dashboard, name='paciente_dashboard'),
     path('configuracion_paciente/', views.configuracion_paciente, name='configuracion_paciente'),
     path('perfil_paciente/', views.perfil_paciente, name='perfil_paciente'),
     path('visualizacion_paciente/', views.visualizacion_paciente, name='visualizacion_paciente'),
     path('detalles_resultados/', views.detalles_resultados, name='detalles_resultados'),
+    path('filtrar_por_cedula/', views.filtrar_por_cedula, name='filtrar_por_cedula'),
+    path('enviar_alerta/', views.enviar_alerta_personalizada, name='enviar_alerta_personalizada')
 ]
+

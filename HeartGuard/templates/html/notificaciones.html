@@ -10,53 +10,29 @@
   <div class="container mt-5">
     <h1 class="mb-4 text-center">Notificaciones Médicas</h1>
 
-    <!-- Notificaciones Automáticas de Pacientes con Alto Riesgo -->
-    <div class="card mb-4">
-      <div class="card-header bg-warning text-white">
-        Notificaciones Automáticas - Alto Riesgo Cardíaco
-      </div>
-      <div class="card-body">
-        <p>Las siguientes notificaciones han sido generadas automáticamente para pacientes con alto riesgo cardíaco:</p>
-        <ul class="list-group">
-          {% for informe in pacientes_riesgo %}
-            <li class="list-group-item">
-              <strong>Paciente:</strong> {{ informe.paciente.nombres }} {{ informe.paciente.apellidos }}
-              <br>
-              <strong>Notificación:</strong> Alta probabilidad de riesgo cardíaco. Se recomienda seguimiento cercano.
-              <br>
-              <span class="text-muted">Fecha de Informe: {{ informe.fecha }}</span>
-            </li>
-          {% empty %}
-            <li class="list-group-item text-center text-muted">No hay pacientes de alto riesgo registrados.</li>
-          {% endfor %}
-        </ul>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Enviar Alertas Personalizadas -->
+    <!-- Enviar Alerta Personalizada a un Paciente -->
     <div class="card mb-4">
       <div class="card-header bg-primary text-white">
-        Enviar Alerta Personalizada a Pacientes
+        Enviar Alerta Personalizada
       </div>
       <div class="card-body">
         <form method="post" action="{% url 'enviar_alerta_personalizada' %}">
           {% csrf_token %}
+
+          <!-- Campo para buscar paciente por número de identificación -->
           <div class="form-group">
-            <label for="paciente">Seleccionar Paciente</label>
-            <select class="form-control" id="paciente" name="paciente">
-              {% for paciente in pacientes %}
-                <option value="{{ paciente.id }}">{{ paciente.nombres }} {{ paciente.apellidos }}</option>
-              {% endfor %}
-            </select>
+            <label for="cedula">Buscar Paciente por Número de Identificación (Cédula)</label>
+            <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ingrese el número de cédula" required>
           </div>
 
-          <div class="form-group">
+          <!-- Campo para mensaje personalizado -->
+          <div class="form-group mt-3">
             <label for="mensaje">Mensaje de Alerta</label>
-            <textarea class="form-control" id="mensaje" name="mensaje" rows="4" placeholder="Escriba la alerta personalizada para el paciente..."></textarea>
+            <textarea class="form-control" id="mensaje" name="mensaje" rows="4" placeholder="Escriba la alerta personalizada para el paciente..." required></textarea>
           </div>
 
-          <button type="submit" class="btn btn-danger">Enviar Alerta</button>
+          <!-- Botón para enviar la notificación -->
+          <button type="submit" class="btn btn-danger mt-3">Enviar Notificación</button>
         </form>
       </div>
     </div>

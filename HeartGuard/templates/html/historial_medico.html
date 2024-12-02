@@ -16,7 +16,7 @@
         <h4>Filtrar por Número de Cédula</h4>
       </div>
       <div class="card-body">
-        <form method="get" action="/filtrar_por_cedula" class="form-inline justify-content-center">
+        <form method="get" action="{% url 'filtrar_por_cedula' %}" class="form-inline justify-content-center">
           <div class="form-group mr-3">
             <label for="cedula" class="mr-2">Número de Cédula</label>
             <input type="text" class="form-control" id="cedula" name="cedula" placeholder="Ej: 1234567890" required>
@@ -27,31 +27,67 @@
     </div>
 
     <!-- Información Completa del Paciente -->
-    <div class="card mb-4">
-      <div class="card-header bg-info text-white">
-        <h4>Datos del Paciente</h4>
-      </div>
-      <div class="card-body">
-        <h5><strong>Nombre:</strong> Pedro Gómez</h5>
-        <h5><strong>Cédula:</strong> 1234567890</h5>
-        <h5><strong>Edad:</strong> 55</h5>
-        <h5><strong>Sexo:</strong> Masculino</h5>
-        <h5><strong>Última Consulta:</strong> 2023-06-15</h5>
-        
-        <h5><strong>Historial Médico:</strong></h5>
-        <ul>
-          <li>Hipertensión</li>
-          <li>Diabetes Tipo 2</li>
-        </ul>
+    {% if paciente %}
+      <h2>Historial Médico de {{ paciente.nombres }} {{ paciente.apellidos }}</h2>
+      <p><strong>Documento:</strong> {{ paciente.numero_documento }}</p>
+      <p><strong>Dirección:</strong> {{ paciente.direccion }}</p>
+      <p><strong>Teléfono:</strong> {{ paciente.telefono }}</p>
+      <p><strong>Fecha de Nacimiento:</strong> {{ paciente.fecha_nacimiento|date:"d/m/Y" }}</p>
 
-        <h5><strong>Datos de Salud:</strong></h5>
-        <p><strong>Presión Arterial:</strong> 140/90 mmHg</p>
-        <p><strong>Colesterol:</strong> 220 mg/dL</p>
-        <p><strong>Frecuencia Cardíaca:</strong> 80 bpm</p>
-        <p><strong>Resultado Análisis de Red Neuronal:</strong> Alto Riesgo Cardíaco</p>
-        
-      </div>
-    </div>
+      <h3 class="mt-4">Informes</h3>
+      {% if historial %}
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+              <tr>
+                <th>Fecha</th>
+                <th>Edad</th>
+                <th>Sexo</th>
+                <th>Tipo de Dolor</th>
+                <th>Presión Arterial</th>
+                <th>Colesterol</th>
+                <th>Azúcar Ayunas</th>
+                <th>ECG</th>
+                <th>FC Máx</th>
+                <th>Angina</th>
+                <th>Depresión ST</th>
+                <th>Pendiente ST</th>
+                <th>Vasos Coloreados</th>
+                <th>Talasemia</th>
+                <th>Diagnóstico</th>
+                <th>Observaciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for informe in historial %}
+                <tr>
+                  <td>{{ informe.fecha|date:"d/m/Y H:i" }}</td>
+                  <td>{{ informe.age }}</td>
+                  <td>{{ informe.get_sex_display }}</td>
+                  <td>{{ informe.cp }}</td>
+                  <td>{{ informe.trtbps }}</td>
+                  <td>{{ informe.chol }}</td>
+                  <td>{{ informe.fbs|yesno:"Sí,No" }}</td>
+                  <td>{{ informe.restecg }}</td>
+                  <td>{{ informe.thalachh }}</td>
+                  <td>{{ informe.exng|yesno:"Sí,No" }}</td>
+                  <td>{{ informe.oldpeak }}</td>
+                  <td>{{ informe.slp }}</td>
+                  <td>{{ informe.caa }}</td>
+                  <td>{{ informe.thall }}</td>
+                  <td>{{ informe.get_output_display }}</td>
+                  <td>{{ informe.observaciones|default:"Sin observaciones" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-warning">No se encontraron informes médicos para este paciente.</p>
+      {% endif %}
+    {% else %}
+      <p class="text-danger">No se encontró un paciente con la cédula ingresada.</p>
+    {% endif %}
   </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
