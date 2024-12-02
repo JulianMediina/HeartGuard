@@ -164,7 +164,7 @@ Test123456789
 ### Paciente de pruebas 
 ```
 usuario
-julian.mediina@gmail.com
+felipe.luque4182@example.com
 contraseña
 Test123456789
 ```
