@@ -20,29 +20,33 @@
               
               <div class="text-center mb-4">
                 <i class="fa-solid fa-user avatar-icon"></i>
-                <h4 class="mt-2">Juan Pérez</h4>
+                <!-- Mostrar nombres y apellidos -->
+                <h4 class="mt-2">{{ paciente.nombres }} {{ paciente.apellidos }}</h4>
                 <p class="text-muted">Paciente</p>
               </div>
 
               <h5 class="mb-3"><i class="fas fa-info-circle"></i> Información Personal</h5>
               <ul class="list-group">
                 <li class="list-group-item">
-                  <i class="fas fa-user"></i> <strong>Nombre:</strong> Juan Pérez
+                  <i class="fas fa-user"></i> <strong>Nombre:</strong> {{ paciente.nombres }}
                 </li>
                 <li class="list-group-item">
-                  <i class="fas fa-phone"></i> <strong>Teléfono:</strong> +57 321 654 9870
+                  <i class="fas fa-user"></i> <strong>Apellido:</strong> {{ paciente.apellidos }}
                 </li>
                 <li class="list-group-item">
-                  <i class="fas fa-calendar"></i> <strong>Fecha de Nacimiento:</strong> 15/03/1980
+                  <i class="fas fa-phone"></i> <strong>Teléfono:</strong> {{ paciente.telefono }}
                 </li>
                 <li class="list-group-item">
-                  <i class="fas fa-map-marker-alt"></i> <strong>Dirección:</strong> Calle 123, Bogotá
+                  <i class="fas fa-calendar"></i> <strong>Fecha de Nacimiento:</strong> {{ paciente.fecha_nacimiento }}
                 </li>
                 <li class="list-group-item">
-                  <i class="fas fa-globe"></i> <strong>Departamento:</strong> Cundinamarca
+                  <i class="fas fa-map-marker-alt"></i> <strong>Dirección:</strong> {{ paciente.direccion }}
                 </li>
                 <li class="list-group-item">
-                  <i class="fas fa-city"></i> <strong>Ciudad:</strong> Bogotá
+                  <i class="fas fa-globe"></i> <strong>Departamento:</strong> {{ paciente.departamento }}
+                </li>
+                <li class="list-group-item">
+                  <i class="fas fa-city"></i> <strong>Ciudad:</strong> {{ paciente.ciudad }}
                 </li>
               </ul>
               <button type="button" class="btn btn-primary mt-4" data-toggle="modal" data-target="#updateModal">
@@ -68,23 +72,28 @@
             <form>
               <div class="form-group">
                 <label for="name"><i class="fas fa-user"></i> Nombre</label>
-                <input type="text" class="form-control" id="name" value="Juan Pérez">
+                <input type="text" class="form-control" id="name" value="{{ paciente.nombres }}">
+              </div>
+              <div class="form-group">
+                <label for="surname"><i class="fas fa-user"></i> Apellido</label>
+                <input type="text" class="form-control" id="surname" value="{{ paciente.apellidos }}">
               </div>
               <div class="form-group">
                 <label for="phone"><i class="fas fa-phone"></i> Teléfono</label>
-                <input type="text" class="form-control" id="phone" value="+57 321 654 9870">
+                <input type="text" class="form-control" id="phone" value="{{ paciente.telefono }}">
               </div>
               <div class="form-group">
                 <label for="birthday"><i class="fas fa-calendar"></i> Fecha de Nacimiento</label>
-                <input type="date" class="form-control" id="birthday" value="1980-03-15">
+                <input type="date" class="form-control" id="birthday" value="{{ paciente.fecha_nacimiento }}">
               </div>
               <div class="form-group">
                 <label for="address"><i class="fas fa-map-marker-alt"></i> Dirección</label>
-                <input type="text" class="form-control" id="address" value="Calle 123, Bogotá">
+                <input type="text" class="form-control" id="address" value="{{ paciente.direccion }}">
               </div>
               <div class="form-group">
                 <label for="department"><i class="fas fa-globe"></i> Departamento</label>
                 <select class="form-control" id="department">
+                  <option>{{ paciente.departamento }}</option>
                   <option>Cundinamarca</option>
                   <option>Antioquia</option>
                   <option>Valle del Cauca</option>
@@ -94,6 +103,7 @@
               <div class="form-group">
                 <label for="city"><i class="fas fa-city"></i> Ciudad</label>
                 <select class="form-control" id="city">
+                  <option>{{ paciente.ciudad }}</option>
                   <option>Bogotá</option>
                   <option>Medellín</option>
                   <option>Cali</option>

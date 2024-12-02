@@ -106,12 +106,31 @@ def paciente_dashboard(request):
     return render(request, "paciente_dashboard.html")
 
 # Vista para el perfil del paciente
+@login_required
 def perfil_paciente(request):
-    return render(request, 'perfil_paciente.html')
+    paciente = Paciente.objects.get(usuario_id=request.user.id)  # usa usuario_id en lugar de user
+    return render(request, 'perfil_paciente.html', {'paciente': paciente})
+def detalles_resultados(request, id):
+    # Buscar el informe con el id proporcionado
+    resultado = get_object_or_404(Informe, pk=id)
+    return render(request, 'detalles_resultados.html', {'resultado': resultado})
 
+@login_required
 # Vista para la visualización paciente
 def visualizacion_paciente(request):
-    return render(request, 'visualizacion_paciente.html')
+    # Obtener los parámetros de la fecha
+    dia = request.GET.get('dia')
+    mes = request.GET.get('mes')
+    anio = request.GET.get('anio')
+
+    # Filtrar los resultados según la fecha si los parámetros son proporcionados
+    if dia and mes and anio:
+        resultados = Informe.objects.filter(fecha__day=dia, fecha__month=mes, fecha__year=anio)
+    else:
+        resultados = Informe.objects.all()
+
+    return render(request, 'visualizacion_paciente.html', {'resultados': resultados})
+
 
 # Vista para la configuración del paciente
 def configuracion_paciente(request):

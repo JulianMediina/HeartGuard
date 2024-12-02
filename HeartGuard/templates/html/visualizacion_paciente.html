@@ -46,31 +46,21 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Ejemplo de resultados, reemplazar con datos dinámicos -->
+        <!-- Iterar sobre los resultados dinámicamente -->
+        {% for resultado in resultados %}
         <tr>
-          <td>1</td>
-          <td>2023-06-15</td>
-          <td>Normal</td>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ resultado.fecha }}</td>
+          <td>{{ resultado.resultado }}</td>
           <td>
-            <a href="/detalles_resultados" class="btn btn-info btn-sm">Ver Detalles</a>
+            <a href="{% url 'detalles_resultados' resultado.id %}" class="btn btn-info btn-sm">Ver Detalles</a>
           </td>
         </tr>
+        {% empty %}
         <tr>
-          <td>2</td>
-          <td>2023-05-20</td>
-          <td>Alto riesgo</td>
-          <td>
-            <a href="/detalles_resultados" class="btn btn-info btn-sm">Ver Detalles</a>
-          </td>
+          <td colspan="4">No se encontraron resultados.</td>
         </tr>
-        <tr>
-          <td>3</td>
-          <td>2023-03-12</td>
-          <td>Normal</td>
-          <td>
-            <a href="/detalles_resultados" class="btn btn-info btn-sm">Ver Detalles</a>
-          </td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>

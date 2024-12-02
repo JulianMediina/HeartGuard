@@ -41,6 +41,7 @@ urlpatterns = [
     path('visualizacion_paciente/', views.visualizacion_paciente, name='visualizacion_paciente'),
     path('detalles_resultados/', views.detalles_resultados, name='detalles_resultados'),
     path('filtrar_por_cedula/', views.filtrar_por_cedula, name='filtrar_por_cedula'),
-    path('enviar_alerta/', views.enviar_alerta_personalizada, name='enviar_alerta_personalizada')
+    path('enviar_alerta/', views.enviar_alerta_personalizada, name='enviar_alerta_personalizada'),
+    path('detalles_resultados/<int:id>/', views.detalles_resultados, name='detalles_resultados')
 ]
 
