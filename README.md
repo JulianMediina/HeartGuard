@@ -19,14 +19,14 @@ Primero, clona el repositorio en tu máquina local:
 git clone https://github.com/julianMediina/heartguard.git
 cd heartguard
 ```
-###2. Crear un entorno virtual
+### 2. Crear un entorno virtual
 Crea un entorno virtual para gestionar las dependencias de Python:
 
 ```bash
 Copiar código
 python -m venv venv
 ```
-###3. Activar el entorno virtual
+### 3. Activar el entorno virtual
 En Windows:
 ```bash
 Copiar código
@@ -37,7 +37,7 @@ En macOS/Linux:
 Copiar código
 source venv/bin/activate
 ```
-###4. Instalar las dependencias
+### 4. Instalar las dependencias
 Instala las dependencias del proyecto con pip:
 ```bash
 Copiar código
@@ -46,13 +46,13 @@ pip install -r requirements.txt
 ###5. Configuración de la base de datos MySQL
 Asegúrate de tener MySQL instalado y en ejecución. Si no tienes MySQL, puedes seguir la documentación oficial de MySQL para instalarlo en tu sistema.
 
-5.1 Crear la base de datos
+### 5.1 Crear la base de datos
 Accede a MySQL y crea una base de datos para el proyecto:
 ```sql
 Copiar código
 CREATE DATABASE heartguard_db;
 ```
-###5.2 Configurar la conexión en settings.py
+### 5.2 Configurar la conexión en settings.py
 Abre el archivo heartguard/settings.py y configura la base de datos MySQL en la sección DATABASES de la siguiente manera:
 ```python
 Copiar código
@@ -67,8 +67,8 @@ DATABASES = {
     }
 }
 ```
-#IMPORTANTE IMPORTA BASE DE DATOS ARCHIVO "backup.sql"
-5.3 Instalar el conector de MySQL
+# IMPORTANTE IMPORTA BASE DE DATOS ARCHIVO "backup.sql"
+### 5.3 Instalar el conector de MySQL
 Si no tienes el conector de MySQL para Python, instálalo con:
 
 ```bash
@@ -110,13 +110,13 @@ Ahora, puedes ejecutar el servidor de desarrollo de Django para ver la aplicaci�
 Copiar código
 python manage.py runserver
 ```
-Accede a la aplicación en tu navegador en la siguiente dirección:
+### Accede a la aplicación en tu navegador en la siguiente dirección:
 
 ```
 Copiar código
 http://127.0.0.1:8000/
 ```
-URLconf 
+### URLconf 
 ```
 Using the URLconf defined in HeartGuard.urls, Django tried these URL patterns, in this order:
 alguna direcciones
@@ -139,7 +139,7 @@ detalles_resultados/ [name='detalles_resultados']
 filtrar_por_cedula/ [name='filtrar_por_cedula']
 enviar_alerta/ [name='enviar_alerta_personalizada']
 ```
-Para acceder al panel de administración de Django, utiliza la siguiente URL:
+### Para acceder al panel de administración de Django, utiliza la siguiente URL:
 ```
 Copiar código
 http://127.0.0.1:8000/login/
