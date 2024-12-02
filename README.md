@@ -115,10 +115,8 @@ Accede a la aplicación en tu navegador en la siguiente dirección:
 ```
 Copiar código
 http://127.0.0.1:8000/
-Para acceder al panel de administración de Django, utiliza la siguiente URL:
 ```
-Copiar código
-http://127.0.0.1:8000/login/
+URLconf 
 ```
 Using the URLconf defined in HeartGuard.urls, Django tried these URL patterns, in this order:
 alguna direcciones
@@ -141,6 +139,13 @@ detalles_resultados/ [name='detalles_resultados']
 filtrar_por_cedula/ [name='filtrar_por_cedula']
 enviar_alerta/ [name='enviar_alerta_personalizada']
 ```
+Para acceder al panel de administración de Django, utiliza la siguiente URL:
+```
+Copiar código
+http://127.0.0.1:8000/login/
+http://127.0.0.1:8000/admin/
+```
+
 
 ### Admin de pruebas 
 ```
