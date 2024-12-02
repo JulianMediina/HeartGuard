@@ -1,6 +1,6 @@
 # HeartGuard - Proyecto de Gestión de Resultados Cardíacos
 
-Este proyecto es una aplicación web que permite la visualización de resultados cardíacos de pacientes. Está desarrollada con Django, utilizando una base de datos MySQL para almacenar los datos de los pacientes y sus informes.
+Este proyecto es una aplicación web que permite la visualización de resultados cardíacos de pacientes utilizando una red neuronal para predecir la presencia o ausencia de enfermedades cardiacas. Está desarrollada con Django, utilizando una base de datos MySQL para almacenar los datos de los pacientes y sus informes.
 
 ## Requisitos
 
