@@ -74,7 +74,7 @@ class Informe(models.Model):
     slp = models.IntegerField("Pendiente del Segmento ST")
     caa = models.IntegerField("Número de Vasos Principales Coloreados")
     thall = models.IntegerField("Tipo de Talasemia")
-    output = models.IntegerField(choices=[(0, 'Enfermedad Ausente'), (1, 'Enfermedad Presente')])
+    output = models.IntegerField(null=True, blank=True, choices=[(0, 'Enfermedad Ausente'), (1, 'Enfermedad Presente')])
     observaciones = models.TextField(null=True, blank=True, verbose_name="Observaciones")
 
     # Campo para controlar si los datos han sido utilizados para reentrenar
