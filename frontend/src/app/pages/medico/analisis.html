@@ -1,0 +1,150 @@
+<app-page-header channel="Visualización" title="Visualización y análisis" subtitle="Indicadores agregados de los informes y listado de pacientes, filtrables por fecha." />
+
+<form class="panel stagger-in" style="--i: 1" [formGroup]="filtro" (ngSubmit)="filtrar()" novalidate aria-labelledby="filtro-t">
+  <h2 id="filtro-t" class="channel-label !text-fg">Filtrar por fecha (hasta el día indicado)</h2>
+  <div class="mt-3 flex flex-wrap items-end gap-3">
+    <div class="w-24">
+      <label class="label" for="dia">Día</label>
+      <input id="dia" type="number" class="field vital" formControlName="dia" placeholder="Ej: 15" min="1" max="31" />
+    </div>
+    <div class="w-24">
+      <label class="label" for="mes">Mes</label>
+      <input id="mes" type="number" class="field vital" formControlName="mes" placeholder="Ej: 6" min="1" max="12" />
+    </div>
+    <div class="w-28">
+      <label class="label" for="anio">Año</label>
+      <input id="anio" type="number" class="field vital" formControlName="anio" placeholder="Ej: 2025" min="1900" />
+    </div>
+    <button type="submit" class="btn btn-primary"><app-icon name="filter" [size]="16" /> Filtrar</button>
+    @if (fecha()) {
+      <button type="button" class="btn btn-ghost" (click)="limpiar()">Quitar filtro</button>
+      <span class="chip">Hasta {{ fecha() | date: 'dd/MM/yyyy' }}</span>
+    }
+  </div>
+  @if (filtroError()) {
+    <p class="mt-2 text-sm font-semibold text-alert-fg" role="alert">{{ filtroError() }}</p>
+  }
+</form>
+
+@if (data.state().status === 'error') {
+  <div class="mt-5"><app-error-banner [message]="errorMsg()" (retry)="data.reload()" /></div>
+} @else if (!a()) {
+  <div class="mt-5 grid gap-4 md:grid-cols-3"><app-skeleton shape="h-40 w-full" /><app-skeleton shape="h-40 w-full" /><app-skeleton shape="h-40 w-full" /></div>
+}
+
+@if (a(); as a) {
+  <div class="mt-5 grid gap-4 md:grid-cols-3" [class.opacity-60]="data.state().status === 'loading'">
+    <app-monitor-channel class="stagger-in" style="--i: 2" code="INF" label="Informes analizados" [value]="a.total_informes" unit="informes" />
+    <app-monitor-channel class="stagger-in" style="--i: 3" code="ALR" label="Informes de riesgo alto" [value]="totalAlto()" unit="informes" tone="alert" [alarm]="totalAlto() > 0" [index]="1" />
+    <section class="panel stagger-in" style="--i: 4" aria-labelledby="dist-t">
+      <h2 id="dist-t" class="channel-label !text-fg">Distribución por riesgo</h2>
+      <app-risk-distribution class="mt-3" [data]="a.distribucion_riesgo" />
+    </section>
+  </div>
+
+  @if (!a.total_informes) {
+    <div class="panel mt-5"><app-empty-state title="No hay informes en el periodo seleccionado" /></div>
+  } @else {
+    <div class="mt-5 grid gap-5 lg:grid-cols-2">
+      <section class="panel stagger-in" style="--i: 5" aria-labelledby="edad-t">
+        <h2 id="edad-t" class="panel-title">Informes por rango de edad</h2>
+        <app-bar-chart class="mt-5" [data]="porEdad()" ariaLabel="Número de informes por rango de edad" />
+      </section>
+      <section class="panel stagger-in" style="--i: 6" aria-labelledby="edadp-t">
+        <h2 id="edadp-t" class="panel-title">Probabilidad media por edad</h2>
+        <p class="mt-1 text-xs text-muted">P(enfermedad) media de la IA, en %.</p>
+        <app-bar-chart class="mt-4" [data]="porEdadProb()" ariaLabel="Probabilidad media por rango de edad, en porcentaje" />
+      </section>
+      <section class="panel stagger-in" style="--i: 7" aria-labelledby="cp-t">
+        <h2 id="cp-t" class="panel-title">Por tipo de dolor torácico</h2>
+        <app-bar-chart class="mt-5" [data]="porCp()" ariaLabel="Número de informes por tipo de dolor torácico" />
+      </section>
+      <section class="panel stagger-in" style="--i: 8" aria-labelledby="sexo-t">
+        <h2 id="sexo-t" class="panel-title">Por sexo</h2>
+        <div class="mt-5 space-y-5">
+          @for (g of porSexo(); track g.etiqueta; let i = $index) {
+            <div class="stagger-in" [style.--i]="i">
+              <div class="flex items-baseline justify-between">
+                <span class="font-semibold text-fg">{{ g.etiqueta }}</span>
+                <span class="vital text-sm text-muted">{{ g.total }} informes · media {{ g.probabilidad_media != null ? (g.probabilidad_media * 100 | number: '1.0-1') + ' %' : '—' }}</span>
+              </div>
+              <div class="mt-2 flex h-3 overflow-hidden rounded-sm bg-surface-2" [attr.aria-label]="g.etiqueta + ': ' + (g.alto_riesgo ?? 0) + ' de ' + g.total + ' con riesgo alto'" role="img">
+                <span class="h-full bg-[var(--risk-alto)] transition-[width] duration-700" [style.width.%]="g.pctAlto"></span>
+              </div>
+              <p class="mt-1 font-mono text-[11px] text-muted">Riesgo alto: {{ g.alto_riesgo ?? 0 }} ({{ g.pctAlto | number: '1.0-1' }} %)</p>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+
+    @if (medias().length) {
+      <section class="panel stagger-in mt-5" style="--i: 9" aria-labelledby="med-t">
+        <header class="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="med-t" class="panel-title">Medias de variables por diagnóstico confirmado</h2>
+          @if (a.total_por_clase; as t) {
+            <span class="channel-label">Ausente: {{ t.sin }} · Presente: {{ t.con }}</span>
+          }
+        </header>
+        <ul class="mt-2 mb-4 flex flex-wrap gap-4 text-xs text-muted" aria-hidden="true">
+          <li class="flex items-center gap-2"><span class="inline-block h-2.5 w-4 rounded-sm bg-[var(--app-series-2)]"></span>Enfermedad ausente</li>
+          <li class="flex items-center gap-2"><span class="inline-block h-2.5 w-4 rounded-sm bg-[var(--app-series-1)]"></span>Enfermedad presente</li>
+        </ul>
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption class="sr-only">Media de cada variable según el diagnóstico confirmado</caption>
+            <thead><tr><th scope="col">Variable</th><th scope="col" class="text-right">Ausente</th><th scope="col" class="text-right">Presente</th><th scope="col" class="w-1/2"><span class="sr-only">Comparación</span></th></tr></thead>
+            <tbody>
+              @for (m of medias(); track m.variable) {
+                <tr>
+                  <td>{{ m.etiqueta }}</td>
+                  <td class="vital text-right">{{ m.sin != null ? (m.sin | number: '1.0-2') : '—' }}</td>
+                  <td class="vital text-right">{{ m.con != null ? (m.con | number: '1.0-2') : '—' }}</td>
+                  <td aria-hidden="true">
+                    <div class="space-y-1">
+                      <div class="h-1.5 rounded-full bg-[var(--app-series-2)] transition-[width] duration-700" [style.width.%]="m.wSin"></div>
+                      <div class="h-1.5 rounded-full bg-[var(--app-series-1)] transition-[width] duration-700" [style.width.%]="m.wCon"></div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+  }
+}
+
+<section class="panel stagger-in mt-5" style="--i: 10" aria-labelledby="lp-t" [attr.aria-busy]="lista.state().status === 'loading'">
+  <header class="flex flex-wrap items-baseline justify-between gap-2">
+    <h2 id="lp-t" class="panel-title">Listado de pacientes</h2>
+    <span class="channel-label">{{ fecha() ? 'Registrados hasta ' + (fecha() | date: 'dd/MM/yyyy') : 'Todos' }} · {{ page()?.count ?? 0 }}</span>
+  </header>
+  @if (lista.state().status === 'error') {
+    <div class="mt-4"><app-error-banner [message]="listaError()" (retry)="lista.reload()" /></div>
+  } @else if (!page()) {
+    <app-skeleton class="mt-4" shape="h-80 w-full" />
+  } @else if (!page()!.results.length) {
+    <app-empty-state title="No hay pacientes registrados en esta fecha." />
+  } @else {
+    <div class="table-wrap mt-3" [class.opacity-60]="lista.state().status === 'loading'">
+      <table class="data-table">
+        <caption class="sr-only">Pacientes</caption>
+        <thead><tr><th scope="col">#</th><th scope="col">Nombre</th><th scope="col">Documento</th><th scope="col">Fecha de ingreso</th><th scope="col">Último riesgo</th></tr></thead>
+        <tbody>
+          @for (p of page()!.results; track p.id; let i = $index) {
+            <tr>
+              <td class="vital text-muted">{{ (pageNum() - 1) * pageSize + i + 1 }}</td>
+              <td><a [routerLink]="['/medico/pacientes', p.id]" class="link">{{ p.nombres }} {{ p.apellidos }}</a></td>
+              <td class="vital text-xs">{{ p.numero_documento }}</td>
+              <td class="font-mono text-xs text-muted">{{ p.fecha_registro ? (p.fecha_registro | date: 'yyyy-MM-dd') : '—' }}</td>
+              <td>@if (p.ultimo_riesgo) { <app-risk-badge [level]="p.ultimo_riesgo" /> } @else { <span class="text-muted">Sin informes</span> }</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination [page]="pageNum()" [count]="page()!.count" [pageSize]="pageSize" (pageChange)="pageNum.set($event)" />
+  }
+</section>

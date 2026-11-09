@@ -1,53 +1,66 @@
+"""Carga pacientes (y sus usuarios) desde un CSV.
+
+Columnas: usuario_email, nombres, apellidos, tipo_documento, numero_documento y, opcionalmente,
+direccion, telefono, fecha_nacimiento, departamento, ciudad.
+
+Los usuarios nuevos se crean con contraseña inutilizable (nada de contraseñas por defecto en
+texto plano, como hacían los antiguos `load_user`/`encrypt_passwords`): el paciente obtiene acceso
+cuando un médico/administrador le asigna una contraseña.
+"""
+
 import csv
-from django.core.management.base import BaseCommand
+
 from django.contrib.auth.models import User
-from HeartGuard.models import Paciente
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
+from HeartGuard.models import Paciente
+
+
 class Command(BaseCommand):
-    help = 'Carga pacientes desde un archivo CSV'
+    help = "Carga pacientes desde un archivo CSV"
 
     def add_arguments(self, parser):
-        parser.add_argument('file_path', type=str, help='Ruta del archivo CSV con los pacientes')
+        parser.add_argument("file_path", type=str, help="Ruta del archivo CSV con los pacientes")
 
-    def handle(self, *args, **kwargs):
-        file_path = kwargs['file_path']
-
+    @transaction.atomic
+    def handle(self, *args, **options):
         try:
-            # Cargar pacientes desde el archivo CSV
-            pacientes = []
-            with open(file_path, newline='', encoding='utf-8') as csvfile:
-                reader = csv.DictReader(csvfile)
+            with open(options["file_path"], newline="", encoding="utf-8") as csvfile:
+                filas = list(csv.DictReader(csvfile))
+        except FileNotFoundError as exc:
+            raise CommandError(f"El archivo {options['file_path']} no existe.") from exc
 
-                for row in reader:
-                    email = row['usuario_email']
-                    try:
-                        # Obtener usuario relacionado
-                        usuario = User.objects.get(username=email)
-
-                        # Crear paciente en memoria
-                        paciente = Paciente(
-                            usuario=usuario,
-                            nombres=row['nombres'],
-                            apellidos=row['apellidos'],
-                            tipo_documento=row['tipo_documento'],
-                            numero_documento=row['numero_documento'],
-                            direccion=row.get('direccion', ''),
-                            telefono=row.get('telefono', ''),
-                            fecha_nacimiento=row.get('fecha_nacimiento', None),
-                            departamento=row.get('departamento', ''),
-                            ciudad=row.get('ciudad', ''),
-                        )
-                        pacientes.append(paciente)
-                    except User.DoesNotExist:
-                        self.stdout.write(self.style.WARNING(f"El usuario con correo {email} no encontrado para el paciente {row['nombres']} {row['apellidos']}. Saltado."))
-
-            # Insertar pacientes de una sola vez
-            with transaction.atomic():
-                Paciente.objects.bulk_create(pacientes)
-            self.stdout.write(self.style.SUCCESS(f"{len(pacientes)} pacientes creados con éxito."))
-
-        except FileNotFoundError as e:
-            self.stdout.write(self.style.ERROR(f"El archivo {e.filename} no existe."))
-        except KeyError as e:
-            self.stdout.write(self.style.ERROR(f"Falta la columna {e} en el archivo CSV."))
+        creados = 0
+        try:
+            for row in filas:
+                email = row["usuario_email"].strip()
+                if Paciente.objects.filter(numero_documento=row["numero_documento"]).exists():
+                    self.stdout.write(self.style.WARNING(f"Documento {row['numero_documento']} ya existe. Saltado."))
+                    continue
+                usuario, nuevo = User.objects.get_or_create(
+                    username=email, defaults={"email": email, "first_name": row["nombres"][:150],
+                                              "last_name": row["apellidos"][:150]},
+                )
+                if nuevo:
+                    usuario.set_unusable_password()
+                    usuario.save(update_fields=["password"])
+                elif hasattr(usuario, "paciente"):
+                    self.stdout.write(self.style.WARNING(f"El usuario {email} ya es paciente. Saltado."))
+                    continue
+                Paciente.objects.create(
+                    usuario=usuario,
+                    nombres=row["nombres"],
+                    apellidos=row["apellidos"],
+                    tipo_documento=row.get("tipo_documento") or "CC",
+                    numero_documento=row["numero_documento"],
+                    direccion=row.get("direccion", ""),
+                    telefono=row.get("telefono", ""),
+                    fecha_nacimiento=row.get("fecha_nacimiento") or None,
+                    departamento=row.get("departamento", ""),
+                    ciudad=row.get("ciudad", ""),
+                )
+                creados += 1
+        except KeyError as exc:
+            raise CommandError(f"Falta la columna {exc} en el archivo CSV.") from exc
+        self.stdout.write(self.style.SUCCESS(f"{creados} pacientes creados con éxito."))

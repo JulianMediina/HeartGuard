@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>HeartGuard</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="HeartGuard: gestión de pacientes, informes cardiológicos y herramienta de predicción de riesgo con IA." />
+    <meta name="theme-color" content="#071a20" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script>
+      // Aplica el tema antes del primer pintado para evitar parpadeo (oscuro por defecto).
+      (function () {
+        try {
+          var t = localStorage.getItem('heartguard-theme');
+          if (t ? t === 'dark' : true) document.documentElement.classList.add('dark');
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <app-root></app-root>
+    <noscript>HeartGuard necesita JavaScript.</noscript>
+  </body>
+</html>

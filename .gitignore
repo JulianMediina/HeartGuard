@@ -1,29 +1,34 @@
-# Entorno virtual
+# Entornos virtuales
 venv/
+.venv/
+
+# Configuración local y secretos (usar .env.example como plantilla)
 .env
-
-# Base de datos local (si es SQLite, por ejemplo)
-db.sqlite3
-
-# Archivos de compilación
-*.pyc
-*.pyo
-*.pyd
-__pycache__/
-
-# Archivos de caché de Django
-*.log
-*.pot
-*.pyc
-*.pyo
-*.db
-.idea/
-.vscode/
-
-# Archivos temporales
-*.bak
-*.swp
-
-# Archivos de configuración locales (por ejemplo, configuraciones de desarrollo)
+.env.*
+!.env.example
 config.py
 settings_local.py
+
+# MySQL portátil y datos locales
+.local/
+db.sqlite3
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Django
+staticfiles/
+*.log
+*.pot
+
+# Editores
+.idea/
+.vscode/
+*.bak
+*.swp
