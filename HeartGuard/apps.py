@@ -1,7 +1,10 @@
 from django.apps import AppConfig
 
-class MiappConfig(AppConfig):
-    name = 'HeartGuard'
+
+class HeartGuardConfig(AppConfig):
+    name = "HeartGuard"
+    verbose_name = "HeartGuard"
+    default_auto_field = "django.db.models.BigAutoField"
 
     def ready(self):
-        import HeartGuard.signals  # Importar el archivo de señales para que se registre
+        import HeartGuard.signals  # noqa: F401

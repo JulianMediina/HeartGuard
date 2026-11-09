@@ -1,0 +1,235 @@
+<app-page-header channel="Herramienta IA · Red neuronal" title="Modelo IA" subtitle="Rendimiento, entrenamiento y versiones del modelo que calcula el riesgo en cada informe.">
+  @if (isAdmin()) {
+    <button type="button" class="btn btn-primary" (click)="confirmar.set(true)" [disabled]="retraining()">
+      <app-icon name="refresh" [size]="16" [class.animate-spin]="retraining()" />
+      {{ retraining() ? 'Reentrenando…' : 'Reentrenar modelo' }}
+    </button>
+  }
+</app-page-header>
+
+@switch (data.state().status) {
+  @case ('error') {
+    <app-error-banner title="No pudimos cargar la información del modelo" [message]="errorMsg()" (retry)="data.reload()" />
+  }
+  @case ('loading') {
+    @if (!m()) {
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <app-skeleton shape="h-40 w-full" />
+        }
+      </div>
+      <app-skeleton class="mt-5" shape="h-80 w-full" />
+    }
+  }
+}
+
+<div aria-live="polite">
+  @if (retraining()) {
+    <div class="panel mb-5" role="status"><p class="channel-label animate-blink">Reentrenando con los informes de diagnóstico confirmado… puede tardar unos segundos.</p></div>
+  }
+  @if (retrainError()) {
+    <div class="mb-5"><app-error-banner title="No se pudo reentrenar" [message]="retrainError()" (retry)="confirmar.set(true)" /></div>
+  }
+  @if (retrainResult(); as r) {
+    <div class="panel result-enter mb-5" [class.!border-hg-sage]="r.promovido">
+      <p class="channel-label !text-fg">Resultado del reentrenamiento</p>
+      <p class="mt-2 text-fg">
+        Versión <strong class="vital">{{ r.version }}</strong> —
+        {{ r.promovido ? 'promovida: es el modelo activo.' : 'no promovida: el modelo activo rendía igual o mejor.' }}
+      </p>
+      @if (r.motivo) {
+        <p class="mt-1 text-sm text-muted">{{ r.motivo }}</p>
+      }
+    </div>
+  }
+</div>
+
+@if (m(); as m) {
+  <section class="grid gap-4 sm:grid-cols-3" aria-label="Datos de la versión activa">
+    <div class="panel stagger-in" style="--i: 0">
+      <p class="channel-label">Versión activa</p>
+      <p class="vital mt-2 text-3xl font-bold text-fg">{{ m.version }}</p>
+      <p class="mt-1 text-xs text-muted">{{ m.version_previa ? 'Anterior: ' + m.version_previa : 'Modelo base' }}</p>
+    </div>
+    <div class="panel stagger-in" style="--i: 1">
+      <p class="channel-label">Entrenado</p>
+      <p class="vital mt-2 text-xl font-bold text-fg">{{ m.entrenado_en ? (m.entrenado_en | date: 'dd/MM/yyyy HH:mm') : '—' }}</p>
+      <p class="mt-1 text-xs text-muted">{{ featureNames().length }} variables de entrada</p>
+    </div>
+    <div class="panel stagger-in" style="--i: 2">
+      <p class="channel-label">Umbral de decisión</p>
+      <p class="vital mt-2 text-3xl font-bold text-fg">{{ m.threshold !== null ? (m.threshold | number: '1.3-3') : '—' }}</p>
+      <p class="mt-1 text-xs text-muted">Elegido por el modelo (Youden en validación cruzada)</p>
+    </div>
+  </section>
+
+  <!-- Umbral frente a bandas de riesgo -->
+  <section class="panel stagger-in mt-5" style="--i: 3" aria-labelledby="umbral-t">
+    <h2 id="umbral-t" class="panel-title">Dos conceptos distintos: umbral y bandas de riesgo</h2>
+    <div class="relative mt-8 mb-10" aria-hidden="true">
+      <div class="flex h-4 overflow-hidden rounded-sm">
+        <span class="h-full w-[33%] bg-[var(--risk-bajo)]"></span>
+        <span class="h-full w-[33%] bg-[var(--risk-moderado)]"></span>
+        <span class="h-full flex-1 bg-[var(--risk-alto)]"></span>
+      </div>
+      <span class="absolute -bottom-6 left-0 font-mono text-[10px] text-muted">0</span>
+      <span class="absolute -bottom-6 left-[33%] -translate-x-1/2 font-mono text-[10px] text-muted">0,33</span>
+      <span class="absolute -bottom-6 left-[66%] -translate-x-1/2 font-mono text-[10px] text-muted">0,66</span>
+      <span class="absolute right-0 -bottom-6 font-mono text-[10px] text-muted">1</span>
+      @if (m.threshold !== null) {
+        <span class="absolute -top-6 bottom-[-4px] w-0.5 bg-fg" [style.left.%]="m.threshold * 100">
+          <span class="absolute -top-1 left-1.5 font-mono text-[10px] font-bold whitespace-nowrap text-fg">umbral {{ m.threshold | number: '1.3-3' }}</span>
+        </span>
+      }
+    </div>
+    <div class="grid gap-4 text-sm sm:grid-cols-2">
+      <p class="text-muted">
+        <strong class="text-fg">Umbral de decisión ({{ m.threshold !== null ? (m.threshold | number: '1.3-3') : '—' }})</strong>: propio del modelo. Si
+        P(enfermedad) lo supera, la <em>clase</em> predicha es 1 (enfermedad). Se ajusta en cada entrenamiento.
+      </p>
+      <p class="text-muted">
+        <strong class="text-fg">Bandas de riesgo</strong>: tramos fijos para comunicar la probabilidad —
+        bajo {{ m.umbrales_riesgo?.['bajo'] ?? '< 0.33' }}, moderado {{ m.umbrales_riesgo?.['moderado'] ?? '< 0.66' }},
+        alto {{ m.umbrales_riesgo?.['alto'] ?? '≥ 0.66' }}. Un informe puede ser clase 1 con riesgo «moderado».
+      </p>
+    </div>
+  </section>
+
+  @if (kpis().length) {
+    <section class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5" aria-label="Métricas en el conjunto de test">
+      @for (k of kpis(); track k.key; let i = $index) {
+        <app-kpi-card class="stagger-in" [style.--i]="i + 4" [code]="k.code" [label]="k.label" [value]="k.value" [cv]="k.cv" [index]="i" />
+      }
+    </section>
+  }
+
+  <div class="mt-5 grid gap-5 lg:grid-cols-2">
+    <section class="panel stagger-in" style="--i: 9" aria-labelledby="loss-t">
+      <h2 id="loss-t" class="panel-title">Curvas de pérdida</h2>
+      <p class="mt-1 mb-4 text-xs text-muted">Pérdida (BCE) por época en entrenamiento y validación; el modelo guardado es el de menor pérdida de validación.</p>
+      @if (lossSeries().length) {
+        <app-line-chart [series]="lossSeries()" [marker]="bestMarker()" xLabel="Época" yLabel="Pérdida" [hoverTitle]="epoch" [formatX]="fmt3" [formatY]="fmt3" ariaLabel="Curvas de pérdida de entrenamiento y validación" />
+      } @else {
+        <p class="text-sm text-muted">Historial de entrenamiento no disponible.</p>
+      }
+    </section>
+    <section class="panel stagger-in" style="--i: 10" aria-labelledby="roc-t">
+      <h2 id="roc-t" class="panel-title">Curva ROC</h2>
+      <p class="mt-1 mb-4 text-xs text-muted">Sensibilidad frente a tasa de falsos positivos en test. La diagonal es un clasificador aleatorio.</p>
+      @if (rocSeries().length) {
+        <app-line-chart [series]="rocSeries()" [diagonal]="true" [xDomain]="[0, 1]" [yDomain]="[0, 1]" xLabel="Tasa de falsos positivos" yLabel="Sensibilidad" [formatX]="pct" [formatY]="pct" [hoverTitle]="fpr" ariaLabel="Curva ROC del modelo" />
+      } @else {
+        <div class="grid h-60 place-items-center rounded-sm border border-dashed border-border text-center">
+          <p class="max-w-xs text-sm text-muted">
+            El servicio no publica los puntos de la curva ROC. AUC en test:
+            <strong class="vital text-fg">{{ m.metrics?.test?.roc_auc !== undefined ? (m.metrics!.test.roc_auc | number: '1.3-3') : '—' }}</strong>
+          </p>
+        </div>
+      }
+    </section>
+  </div>
+
+  <div class="mt-5 grid gap-5 lg:grid-cols-2">
+    @if (m.metrics?.confusion_matrix; as cm) {
+      <section class="panel stagger-in" style="--i: 11" aria-labelledby="cm-t">
+        <h2 id="cm-t" class="panel-title">Matriz de confusión</h2>
+        <p class="mt-1 mb-4 text-xs text-muted">Conjunto de test con el umbral del modelo.</p>
+        <app-confusion-matrix [matrix]="cm" />
+      </section>
+    }
+    @if (comparacion().length) {
+      <section class="panel stagger-in" style="--i: 12" aria-labelledby="cmp-t">
+        <h2 id="cmp-t" class="panel-title">Red neuronal frente a regresión logística</h2>
+        <p class="mt-1 mb-4 text-xs text-muted">Mismo conjunto de test; la regresión logística es la línea base.</p>
+        <app-comparison-bars [rows]="comparacion()" />
+      </section>
+    }
+    @if (m.metrics?.class_distribution; as cd) {
+      <section class="panel stagger-in" style="--i: 13" aria-labelledby="cd-t">
+        <h2 id="cd-t" class="panel-title">Distribución de clases</h2>
+        <p class="mt-1 mb-4 text-xs text-muted">Pacientes del conjunto de datos por etiqueta (1 = enfermedad).</p>
+        <app-class-distribution [distribution]="cd" />
+      </section>
+    }
+    <section class="panel stagger-in" style="--i: 14" aria-labelledby="arq-t">
+      <h2 id="arq-t" class="panel-title">Arquitectura</h2>
+      <ol class="mt-4 space-y-2">
+        @for (c of capas(); track c.name; let i = $index) {
+          <li class="stagger-in flex items-center gap-3" [style.--i]="i">
+            <span class="vital grid h-10 w-14 shrink-0 place-items-center rounded-sm border border-border-strong bg-surface-2 font-bold text-fg">{{ c.size }}</span>
+            <span>
+              <span class="block text-sm font-semibold text-fg">{{ c.name }}</span>
+              <span class="block text-xs text-muted">{{ c.detail }}</span>
+            </span>
+          </li>
+        }
+      </ol>
+      @if (m.arquitectura?.['loss']) {
+        <p class="mt-3 font-mono text-[11px] text-muted">Pérdida: {{ m.arquitectura?.['loss'] }}</p>
+      }
+    </section>
+  </div>
+
+  <section class="panel stagger-in mt-5" style="--i: 15" aria-labelledby="ver-t">
+    <h2 id="ver-t" class="panel-title">Historial de versiones</h2>
+    @if (versiones().length) {
+      <div class="table-wrap mt-3">
+        <table class="data-table">
+          <caption class="sr-only">Versiones del modelo</caption>
+          <thead>
+            <tr><th scope="col">Fecha</th><th scope="col">Versión</th><th scope="col">Previa</th><th scope="col">Estado</th><th scope="col" class="text-right">AUC candidato</th><th scope="col" class="text-right">AUC activo</th><th scope="col" class="text-right">Informes</th><th scope="col">Motivo</th></tr>
+          </thead>
+          <tbody>
+            @for (v of versiones(); track $index) {
+              <tr>
+                <td class="font-mono text-xs whitespace-nowrap">{{ v.fecha ? (v.fecha | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
+                <td class="vital font-semibold" [class.text-hg-sage]="v.version === m.version">{{ v.version }}{{ v.version === m.version ? ' (activa)' : '' }}</td>
+                <td class="vital text-muted">{{ v.version_previa || '—' }}</td>
+                <td><span class="chip" [class.!border-hg-sage]="v.promovido" [class.!text-fg]="v.promovido">{{ v.promovido ? 'Promovida' : 'Descartada' }}</span></td>
+                <td class="vital text-right">{{ v.roc_auc_candidato != null ? (v.roc_auc_candidato | number: '1.3-3') : '—' }}</td>
+                <td class="vital text-right">{{ v.roc_auc_activo != null ? (v.roc_auc_activo | number: '1.3-3') : '—' }}</td>
+                <td class="vital text-right">{{ v.n_informes ?? '—' }}</td>
+                <td class="max-w-72 text-xs text-muted">{{ v.motivo || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="mt-3 text-sm text-muted">Sin reentrenamientos registrados: el modelo activo es el entrenado originalmente.</p>
+    }
+  </section>
+
+  @if (featureSpecs().length) {
+    <section class="panel stagger-in mt-5" style="--i: 16" aria-labelledby="feat-t">
+      <h2 id="feat-t" class="panel-title">Variables de entrada</h2>
+      <div class="table-wrap mt-3">
+        <table class="data-table">
+          <caption class="sr-only">Variables de entrada del modelo</caption>
+          <thead><tr><th scope="col">Variable</th><th scope="col">Nombre</th><th scope="col">Tipo</th><th scope="col">Rango admitido</th></tr></thead>
+          <tbody>
+            @for (f of featureSpecs(); track f.name) {
+              <tr>
+                <td class="vital">{{ f.name }}</td>
+                <td>{{ f.label_es }}<span class="block text-xs text-muted">{{ f.description_es }}</span></td>
+                <td class="text-muted">{{ f.type === 'numeric' ? 'Numérica' : 'Categórica' }}</td>
+                <td class="vital text-xs">{{ f.type === 'numeric' ? (f.min | number) + ' – ' + (f.max | number) : (f.options?.length ?? 0) + ' opciones' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
+  <app-medical-notice class="mt-5" [detail]="m.nota_etiqueta" />
+
+  <app-modal [open]="confirmar()" title="Reentrenar el modelo" (closed)="confirmar.set(false)">
+    <p class="text-sm text-fg">Se entrenará un modelo candidato con los informes que tienen diagnóstico confirmado. Sólo se promoverá si su ROC-AUC iguala o mejora al modelo activo.</p>
+    <p class="mt-2 text-xs text-muted">La operación puede tardar. Si ya hay un reentrenamiento en curso, el servidor lo indicará.</p>
+    <div class="mt-6 flex justify-end gap-3">
+      <button type="button" class="btn btn-ghost" (click)="confirmar.set(false)">Cancelar</button>
+      <button type="button" class="btn btn-primary" (click)="reentrenar()">Reentrenar ahora</button>
+    </div>
+  </app-modal>
+}

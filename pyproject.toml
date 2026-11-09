@@ -1,0 +1,25 @@
+[project]
+name = "heartguard"
+version = "2.0.0"
+description = "HeartGuard: sistema de gestión médica con API REST (Django/DRF) y herramienta de predicción de riesgo cardíaco."
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["HeartGuard/migrations", "frontend", ".local", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ"]
+# DJ001: las tablas heredadas ya usan null=True en campos de texto; se conserva el esquema.
+ignore = ["DJ001"]
+
+[tool.ruff.lint.per-file-ignores]
+"HeartGuard/settings.py" = ["E501"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "HeartGuard.settings"
+python_files = ["test_*.py", "tests.py"]
+testpaths = ["HeartGuard/tests", "HeartGuard/ml/tests"]
+addopts = "-p no:cacheprovider"
+filterwarnings = ["ignore::DeprecationWarning"]

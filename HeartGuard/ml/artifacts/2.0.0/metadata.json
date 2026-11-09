@@ -1,0 +1,64 @@
+{
+  "feature_names": [
+    "age",
+    "sex",
+    "cp",
+    "trtbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalachh",
+    "exng",
+    "oldpeak",
+    "slp",
+    "caa",
+    "thall"
+  ],
+  "threshold": 0.34464332461357117,
+  "threshold_strategy": "youden_oof_cv",
+  "model_config": {
+    "architecture": "mlp",
+    "input_dim": 27,
+    "hidden_sizes": [
+      64,
+      32
+    ],
+    "dropout": 0.3,
+    "activation": "relu",
+    "output": "logit",
+    "loss": "bce",
+    "one_hot": true
+  },
+  "train_config": {
+    "seed": 42,
+    "test_size": 0.15,
+    "val_size": 0.15,
+    "cv_folds": 5,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "max_epochs": 500,
+    "patience": 30,
+    "loss": "bce",
+    "focal_alpha": null,
+    "focal_gamma": 2.0,
+    "one_hot": true,
+    "model": {
+      "hidden_sizes": [
+        64,
+        32
+      ],
+      "dropout": 0.3
+    }
+  },
+  "target": {
+    "name": "enfermedad",
+    "source_column": "output",
+    "definition": "enfermedad = 1 - output",
+    "positive_class": 1,
+    "note_es": "La predicción es la probabilidad de enfermedad cardíaca. La columna 'output' del CSV de Kaggle está invertida respecto al dataset UCI original, por lo que el modelo se entrena con enfermedad = 1 - output. Es un modelo educativo y no sustituye un diagnóstico médico."
+  },
+  "trained_at": "2026-11-09T15:31:37+00:00",
+  "seed": 42,
+  "version": "2.0.0"
+}
